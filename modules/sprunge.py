@@ -3,9 +3,9 @@
 
 import urllib.parse
 import urllib.request
-from xbotpp.modules import Module
+from xbotpp.modules import CommandModule
 
-class sprunge(Module):
+class sprunge(CommandModule):
     def __init__(self):
         Module.__init__(self)
 

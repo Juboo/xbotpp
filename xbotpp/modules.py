@@ -24,15 +24,34 @@ class Module:
     def unload(self):
         pass
 
+class CommandModule(Module):
+    def __init__(self):
+        self._type = "command"
+        Module.__init__(self)
+
+class URLModule(Module):
+    def __init__(self):
+        self._type = "url"
+
+        if not getattr(self, 'url_regex', None):
+            self.url_regex = ""
+
+        Module.__init__(self)
+
 def isModule(member):
-    if member in Module.__subclasses__():
+    if member in CommandModule.__subclasses__():
+        return True
+    elif member in URLModule.__subclasses__():
         return True
     return False
 
 class Modules:
     def __init__(self, bot):
         self.bot = bot
-        self.modules = {}
+        self.modules = {
+            "command": {},
+            "url": {},
+        }
         self.paths = []
 
     def add_path(self, path):
@@ -63,12 +82,18 @@ class Modules:
             module = importlib.import_module(name)
             imp.reload(module)
 
+            count = 0
             for member in inspect.getmembers(module, isModule):
                 mod = member[1]()
                 mod.bot = self.bot
-                self.modules[member[0]] = mod
+                self.modules[mod._type][member[0]] = mod
+                mod.load()
+                count += 1
 
-            return True
+            if count > 0:
+                return True
+            else:
+                return False
 
         except:
             return False

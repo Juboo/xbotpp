@@ -16,12 +16,12 @@ class BotIO:
                 command = cmdargs[0]
                 cmdargs = cmdargs[1:]
 
-                if self.bot.modules.modules[command].perms == "admin":
+                if self.bot.modules.modules['command'][command].perms == "admin":
                     if event.source.nick.lower() not in self.bot.config.get("bot", "owner").lower():
                         buf = "%s: Not authorized." % command
                         continue
 
-                buf = self.bot.modules.modules[command].action(self.bot, event, cmdargs, buf)
+                buf = self.bot.modules.modules['command'][command].action(self.bot, event, cmdargs, buf)
 
             self.bot._log("%s -> %s" % (event.target, buf), "out")
             for line in buf.split("\n"):

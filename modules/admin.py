@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 # vim: noai:ts=4:sw=4:expandtab:syntax=python
 
-from xbotpp.modules import Module
+from xbotpp.modules import CommandModule
 
-class reload(Module):
+class reload(CommandModule):
     def __init__(self):
         self.perms = "admin"
-        Module.__init__(self)
+        CommandModule.__init__(self)
 
     def action(self, bot, event, args, buf):
         done = []
@@ -27,10 +27,10 @@ class reload(Module):
             else:
                 return "Failed to reload %s." % ", ".join(failed)
 
-class join(Module):
+class join(CommandModule):
     def __init__(self):
         self.perms = "admin"
-        Module.__init__(self)
+        CommandModule.__init__(self)
 
     def action(self, bot, event, args, buf):
         for channel in args:
@@ -39,10 +39,10 @@ class join(Module):
             except:
                 return "Couldn't join channel %s." % channel
 
-class part(Module):
+class part(CommandModule):
     def __init__(self):
         self.perms = "admin"
-        Module.__init__(self)
+        CommandModule.__init__(self)
 
     def action(self, bot, event, args, buf):
         try:
@@ -50,10 +50,10 @@ class part(Module):
         except:
             pass
 
-class prefix(Module):
+class prefix(CommandModule):
     def __init__(self):
         self.perms = "admin"
-        Module.__init__(self)
+        CommandModule.__init__(self)
 
     def action(self, bot, event, args, buf):
         if len(args[0]) == 1:

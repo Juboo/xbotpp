@@ -24,6 +24,7 @@ class Bot(irc.bot.SingleServerIRCBot):
         signal.signal(signal.SIGTERM, self._goodbye)
 
         self.modules.load_init(config.module_path)
+        self._debug("Loaded commands: %s" % ". ".join(self.modules.modules['command']))
 
         hosts = []
         _hosts = [s.strip() for s in self.config.get(self.config.active_network, "servers").split(',')]
