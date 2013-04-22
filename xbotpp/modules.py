@@ -59,13 +59,19 @@ class Modules:
             self.bot._debug("Loading module %s: %s" % (module, 'OK' if status else 'failed'))
 
     def load(self, name):
-        module = importlib.import_module(name)
-        imp.reload(module)
+        try:
+            module = importlib.import_module(name)
+            imp.reload(module)
 
-        for member in inspect.getmembers(module, isModule):
-            mod = member[1]()
-            mod.bot = self.bot
-            self.modules[member[0]] = mod
+            for member in inspect.getmembers(module, isModule):
+                mod = member[1]()
+                mod.bot = self.bot
+                self.modules[member[0]] = mod
+
+            return True
+
+        except:
+            return False
 
     def unload(self, name):
         if name not in self.modules:
