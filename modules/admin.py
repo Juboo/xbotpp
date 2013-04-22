@@ -26,3 +26,39 @@ class reload(Module):
                 return "Reloaded %s but failed to reload %s." % (", ".join(failed), ", ".join(done))
             else:
                 return "Failed to reload %s." % ", ".join(failed)
+
+class join(Module):
+    def __init__(self):
+        self.perms = "admin"
+        Module.__init__(self)
+
+    def action(self, bot, event, args, buf):
+        for channel in args:
+            try:
+                self.bot.connection.join(channel)
+            except:
+                return "Couldn't join channel %s." % channel
+
+class part(Module):
+    def __init__(self):
+        self.perms = "admin"
+        Module.__init__(self)
+
+    def action(self, bot, event, args, buf):
+        try:
+            self.bot.connection.part(args[0], args[1:])
+        except:
+            pass
+
+class prefix(Module):
+    def __init__(self):
+        self.perms = "admin"
+        Module.__init__(self)
+
+    def action(self, bot, event, args, buf):
+        if len(args[0]) == 1:
+            self.bot.prefix = args[0]
+            return "Prefix set to %s." % args[0]
+        else:
+            return "Invalid prefix."
+

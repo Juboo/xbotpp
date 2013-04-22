@@ -16,6 +16,7 @@ class Bot(irc.bot.SingleServerIRCBot):
         self.config = config
         self.prefix = config.get('bot', 'prefix')
         self.debug = False
+        self.version = 0.1
         self.modules = modules.Modules(self)
         self.botio = botio.BotIO(self)
 
@@ -61,6 +62,9 @@ class Bot(irc.bot.SingleServerIRCBot):
         if self.debug and event:
             self.connection.notice(event.source, message)
         self._log(message)
+
+    def get_version(self):
+        return "xbotpp %s" % str(self.version)
 
     def on_nicknameinuse(self, client, event):
         client.nick(client.get_nickname() + "_")
