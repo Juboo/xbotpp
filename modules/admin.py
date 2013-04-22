@@ -13,10 +13,11 @@ class reload(Module):
         failed = [] 
 
         for mod in args:
-            try:
-                self.bot.modules.load(mod)
+            status = self.bot.modules.load(mod)
+
+            if status == True:
                 done.append(mod)
-            except:
+            else:
                 failed.append(mod)
 
             if len(failed) == 0 and len(done) > 0:
