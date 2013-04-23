@@ -9,11 +9,13 @@ import importlib
 
 class Module:
     def __init__(self):
-        if not getattr(self, 'perms', None):
-            self.perms = "common"
-
         if not getattr(self, 'name', None):
             self.name = self.__class__.__name__
+
+        if not getattr(self, "bind", None):
+            self.bind = [
+                [ "command", self.name, self.action, "common" ],
+            ]
 
     def action(self, event, args, buf):
         pass
@@ -24,24 +26,8 @@ class Module:
     def unload(self):
         pass
 
-class CommandModule(Module):
-    def __init__(self):
-        self._type = "command"
-        Module.__init__(self)
-
-class URLModule(Module):
-    def __init__(self):
-        self._type = "url"
-
-        if not getattr(self, 'url_regex', None):
-            self.url_regex = ""
-
-        Module.__init__(self)
-
 def isModule(member):
-    if member in CommandModule.__subclasses__():
-        return True
-    elif member in URLModule.__subclasses__():
+    if member in Module.__subclasses__():
         return True
     return False
 
@@ -51,6 +37,7 @@ class Modules:
         self.modules = {
             "command": {},
             "url": {},
+            "privmsg": {},
         }
         self.paths = []
 
@@ -86,7 +73,8 @@ class Modules:
             for member in inspect.getmembers(module, isModule):
                 mod = member[1]()
                 mod.bot = self.bot
-                self.modules[mod._type][member[0]] = mod
+                for type, name, func, perms in mod.bind:
+                    self.modules[type][name] = (func, perms)
                 mod.load()
                 count += 1
 

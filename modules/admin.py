@@ -1,12 +1,14 @@
 # -*- coding: utf-8 -*-
 # vim: noai:ts=4:sw=4:expandtab:syntax=python
 
-from xbotpp.modules import CommandModule
+from xbotpp.modules import Module
 
-class reload(CommandModule):
+class reload(Module):
     def __init__(self):
-        self.perms = "admin"
-        CommandModule.__init__(self)
+        self.bind = [
+            ["command", "reload", self.action, "admin" ],
+        ]
+        Module.__init__(self)
 
     def action(self, bot, event, args, buf):
         done = []
@@ -27,10 +29,13 @@ class reload(CommandModule):
             else:
                 return "Failed to reload %s." % ", ".join(failed)
 
-class join(CommandModule):
+class join(Module):
     def __init__(self):
         self.perms = "admin"
-        CommandModule.__init__(self)
+        self.bind = [
+            [ "command", "join", self.action, "admin" ],
+        ]
+        Module.__init__(self)
 
     def action(self, bot, event, args, buf):
         for channel in args:
@@ -39,10 +44,13 @@ class join(CommandModule):
             except:
                 return "Couldn't join channel %s." % channel
 
-class part(CommandModule):
+class part(Module):
     def __init__(self):
         self.perms = "admin"
-        CommandModule.__init__(self)
+        self.bind = [
+            [ "command", "part", self.action, "admin" ],
+        ]
+        Module.__init__(self)
 
     def action(self, bot, event, args, buf):
         try:
@@ -50,10 +58,14 @@ class part(CommandModule):
         except:
             pass
 
-class prefix(CommandModule):
+class prefix(Module):
     def __init__(self):
         self.perms = "admin"
-        CommandModule.__init__(self)
+        self.bind = [
+            [ "command", "prefix", self.action, "admin" ],
+            [ "privmsg", "prefix", self.privmsg, "common" ],
+        ]
+        Module.__init__(self)
 
     def action(self, bot, event, args, buf):
         if len(args[0]) == 1:
@@ -61,4 +73,11 @@ class prefix(CommandModule):
             return "Prefix set to %s." % args[0]
         else:
             return "Invalid prefix."
+
+    def privmsg(self, bot, event, args, buf):
+        try:
+            if self.bot.connection.get_nickname() in args[0] and "help" in args[1]:
+                self.bot.connection.notice(event.target, "Hi, I'm a bot! Try using %shelp to see what I can do." % self.bot.prefix)
+        except:
+            pass
 
