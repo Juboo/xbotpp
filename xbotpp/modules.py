@@ -6,6 +6,7 @@ import imp
 import inspect
 import importlib
 
+
 class Module:
     """\
     Base class for xbot++ modules.
@@ -16,7 +17,7 @@ class Module:
         Define module information, among other things.
         """
 
-        self.name = self.name if getattr(self, 'name', None) else  self.__class__.__name__
+        self.name = self.name if getattr(self, 'name', None) else self.__class__.__name__
         """\
         The name of the module. Defaults to the class name if not explicitly specified.
         """
@@ -40,7 +41,7 @@ class Module:
         Default event handler.
 
         If `self.bind` is not set in the module, this function is called when a bot command
-        matching the module's name is called. 
+        matching the module's name is called.
 
         :param bot: the bot that the function is being called by
         :type bot: :py:class:`xbotpp.Bot`
@@ -70,6 +71,7 @@ class Module:
 
         pass
 
+
 def isModule(member):
     """\
     Returns true if `member` is a module, else False.
@@ -82,6 +84,7 @@ def isModule(member):
     if member in Module.__subclasses__():
         return True
     return False
+
 
 class Modules:
     """\

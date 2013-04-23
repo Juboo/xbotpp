@@ -3,6 +3,7 @@
 import json
 from xbotpp.modules import Module
 
+
 class info(Module):
     def __init__(self):
         Module.__init__(self)

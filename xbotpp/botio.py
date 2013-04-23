@@ -1,5 +1,6 @@
 # vim: noai:ts=4:sw=4:expandtab:syntax=python
 
+
 class BotIO:
     """\
     Class handling the IO functions of xbot++.
@@ -19,7 +20,7 @@ class BotIO:
         Handling of bot commands flows as following:
 
         (1)
-            Split the message by the pipe character (``|``), and treat each segment as a separate command 
+            Split the message by the pipe character (``|``), and treat each segment as a separate command
             in a sequence of commands.
 
         (2)

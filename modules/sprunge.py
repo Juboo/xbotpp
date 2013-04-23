@@ -4,6 +4,7 @@ import urllib.parse
 import urllib.request
 from xbotpp.modules import Module
 
+
 class sprunge(Module):
     """\
     Sprunge pastebin module

@@ -2,6 +2,7 @@
 
 from xbotpp.modules import Module
 
+
 class help(Module):
     """\
     Provide help on the bot.
