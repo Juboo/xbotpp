@@ -13,12 +13,22 @@ from . import botio
 
 class Bot(irc.bot.SingleServerIRCBot):
     def __init__(self, config):
+        """\
+        Initialize the bot, reading the configuration from `config`.
+
+        :param config: bot configuration
+        :type config: :py:class:`configparser.ConfigParser`
+        """
+
         self.config = config
         self.prefix = config.get('bot', 'prefix')
         self.debug = False
         self.version = 0.1
         self.modules = modules.Modules(self)
         self.botio = botio.BotIO(self)
+
+        if self.config.has_option("bot", "skip_load"):
+            return None
 
         signal.signal(signal.SIGINT, self._goodbye)
         signal.signal(signal.SIGTERM, self._goodbye)

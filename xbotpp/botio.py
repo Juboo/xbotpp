@@ -2,10 +2,49 @@
 # vim: noai:ts=4:sw=4:expandtab:syntax=python
 
 class BotIO:
+    """\
+    Class handling the IO functions of xbot++.
+    """
+
     def __init__(self, bot):
         self.bot = bot
 
     def read(self, client, event):
+        """\
+        Reads input from an IRC event (like a channel message), calls message-bound modules, and determines
+        if any command modules need to be executed.
+
+        If the received message starts with the bot prefix character, this function assumes that the message
+        is a bot command string.
+
+        Handling of bot commands flows as following:
+
+        (1)
+            Split the message by the pipe character (``|``), and treat each segment as a separate command 
+            in a sequence of commands.
+
+        (2)
+            Take the first word of a command as the command's name, and search for the command in the
+            dictionary of known commands.
+
+        (3)
+            If the command exists, check that the user executing the command has the privileges to do so,
+            stopping execution if he does not.
+
+        (4)
+            Execute the command, storing the output of the command in the buffer, and passing the arguments
+            passed and the output buffer of the previously executed command in the sequence to the command,
+            if any.
+
+        (5)
+            If there are any commands in the sequence left to be executed, jump to (2).
+
+        :param client: the :py:class:`irc.client` that received the command
+        :type client: :py:class:`irc.client`
+        :param event: the :py:class:`irc.client.Event` that triggered this function
+        :type event: :py:class:`irc.client.Event`
+        """
+
         for i, elem in enumerate(self.bot.modules.modules['privmsg']):
             self.bot.modules.modules['privmsg'][elem][0](self.bot, event, event.arguments[0].split(), "")
 
