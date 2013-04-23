@@ -1,7 +1,7 @@
-# -*- coding: utf-8 -*-
 # vim: noai:ts=4:sw=4:expandtab:syntax=python
 
 from xbotpp.modules import Module
+
 
 class channel(Module):
     """\
@@ -11,8 +11,8 @@ class channel(Module):
     def __init__(self):
         self.perms = "admin"
         self.bind = [
-            [ "command", "join", self.join, "admin" ],
-            [ "command", "part", self.part, "admin" ],
+            ["command", "join", self.join, "admin"],
+            ["command", "part", self.part, "admin"],
         ]
         Module.__init__(self)
 
@@ -35,11 +35,14 @@ class channel(Module):
         """
 
         if len(args) == 1:
-            try: self.bot.connection.part(args[0])
-            except: pass
+            try:
+                self.bot.connection.part(args[0])
+            except:
+                pass
         elif len(args) > 1:
-            try: self.bot.connection.part(args[0], args[1:])
-            except: pass
+            try:
+                self.bot.connection.part(args[0], args[1:])
+            except:
+                pass
         else:
             return "Usage: %spart <channel> [message]" % bot.prefix
-

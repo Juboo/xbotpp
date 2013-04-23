@@ -1,9 +1,9 @@
-# -*- coding: utf-8 -*-
 # vim: noai:ts=4:sw=4:expandtab:syntax=python
 
 import urllib.parse
 import urllib.request
 from xbotpp.modules import Module
+
 
 class sprunge(Module):
     """\
@@ -24,4 +24,3 @@ class sprunge(Module):
         req = urllib.request.Request("http://sprunge.us", bytes(data.encode('utf-8')))
         url = urllib.request.urlopen(req).read().strip()
         return str(url, 'utf-8')
-

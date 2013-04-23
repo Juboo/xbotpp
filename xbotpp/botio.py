@@ -1,5 +1,5 @@
-# -*- coding: utf-8 -*-
 # vim: noai:ts=4:sw=4:expandtab:syntax=python
+
 
 class BotIO:
     """\
@@ -20,7 +20,7 @@ class BotIO:
         Handling of bot commands flows as following:
 
         (1)
-            Split the message by the pipe character (``|``), and treat each segment as a separate command 
+            Split the message by the pipe character (``|``), and treat each segment as a separate command
             in a sequence of commands.
 
         (2)
@@ -68,4 +68,3 @@ class BotIO:
             self.bot._log("%s -> %s" % (event.target, buf), "out")
             for line in buf.split("\n"):
                 client.privmsg(event.target, line)
-

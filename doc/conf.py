@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-# -*- coding: utf-8 -*-
 
 import sys, os, importlib, io, inspect
 
@@ -38,5 +37,3 @@ with open("modules/index.rst", "w") as moduleindex:
             mod.write("=" * len(obj) + "\n\n")
             mod.write(".. automodule:: modules.%s\n" % obj)
             mod.write("   :members:\n")
-
-  

@@ -1,7 +1,7 @@
-# -*- coding: utf-8 -*-
 # vim: noai:ts=4:sw=4:expandtab:syntax=python
 
 from xbotpp.modules import Module
+
 
 class reload(Module):
     """\
@@ -10,7 +10,7 @@ class reload(Module):
 
     def __init__(self):
         self.bind = [
-            ["command", "reload", self.reload, "admin" ],
+            ["command", "reload", self.reload, "admin"],
         ]
         Module.__init__(self)
 
@@ -24,12 +24,12 @@ class reload(Module):
         """
 
         done = []
-        failed = [] 
+        failed = []
 
         for mod in args:
             status = self.bot.modules.load(mod)
 
-            if status == True:
+            if status is True:
                 done.append(mod)
             else:
                 failed.append(mod)
@@ -41,6 +41,7 @@ class reload(Module):
             else:
                 return "Failed to reload %s." % ", ".join(failed)
 
+
 class prefix(Module):
     """\
     Temporarily change bot prefix.
@@ -49,8 +50,8 @@ class prefix(Module):
     def __init__(self):
         self.perms = "admin"
         self.bind = [
-            [ "command", "prefix", self.action, "admin" ],
-            [ "privmsg", "prefix", self.privmsg, "common" ],
+            ["command", "prefix", self.action, "admin"],
+            ["privmsg", "prefix", self.privmsg, "common"],
         ]
         Module.__init__(self)
 
@@ -67,4 +68,3 @@ class prefix(Module):
                 self.bot.connection.notice(event.target, "Hi, I'm a bot! Try using %shelp to see what I can do." % self.bot.prefix)
         except:
             pass
-

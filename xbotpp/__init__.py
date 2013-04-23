@@ -1,8 +1,6 @@
-# -*- coding: utf-8 -*-
 # vim: noai:ts=4:sw=4:expandtab:syntax=python
 
 import irc.bot
-import sys
 import datetime
 import re
 import signal
@@ -10,6 +8,7 @@ import traceback
 
 from . import modules
 from . import botio
+
 
 class Bot(irc.bot.SingleServerIRCBot):
     def __init__(self, config):
@@ -53,7 +52,7 @@ class Bot(irc.bot.SingleServerIRCBot):
 
         irc.bot.SingleServerIRCBot.__init__(self, hosts, nick, realname)
 
-    def _log(self, buffer, mode = ""):
+    def _log(self, buffer, mode=""):
         log = datetime.datetime.now().strftime("%b %d %Y %H:%M:%S")
 
         if mode == "out":
@@ -64,12 +63,12 @@ class Bot(irc.bot.SingleServerIRCBot):
             _pad = "---"
 
         if isinstance(buffer, str):
-            buffer = [ buffer ]
+            buffer = [buffer]
 
         for index, line in enumerate(buffer):
             print("%s %s %s" % (log, _pad if index == 0 else "   ", line))
 
-    def _debug(self, message, event = None):
+    def _debug(self, message, event=None):
         if self.debug and event:
             self.connection.notice(event.source, message)
         self._log(message)
