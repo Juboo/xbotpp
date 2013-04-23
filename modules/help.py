@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # vim: noai:ts=4:sw=4:expandtab:syntax=python
 
 from xbotpp.modules import Module
@@ -22,4 +21,3 @@ class help(Module):
             bot_commands.append(module[1])
 
         return "Available commands: %s" % ", ".join(bot_commands)
-

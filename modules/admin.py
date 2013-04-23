@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # vim: noai:ts=4:sw=4:expandtab:syntax=python
 
 from xbotpp.modules import Module
@@ -67,4 +66,3 @@ class prefix(Module):
                 self.bot.connection.notice(event.target, "Hi, I'm a bot! Try using %shelp to see what I can do." % self.bot.prefix)
         except:
             pass
-

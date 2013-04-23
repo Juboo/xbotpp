@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # vim: noai:ts=4:sw=4:expandtab:syntax=python
 
 import os
@@ -201,4 +200,3 @@ class Modules:
         self.modules[name].unload()
         del self.modules[name]
         return True
- 

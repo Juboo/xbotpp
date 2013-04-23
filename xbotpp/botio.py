@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # vim: noai:ts=4:sw=4:expandtab:syntax=python
 
 class BotIO:
@@ -68,4 +67,3 @@ class BotIO:
             self.bot._log("%s -> %s" % (event.target, buf), "out")
             for line in buf.split("\n"):
                 client.privmsg(event.target, line)
-

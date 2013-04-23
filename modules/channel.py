@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 # vim: noai:ts=4:sw=4:expandtab:syntax=python
 
 from xbotpp.modules import Module
@@ -42,4 +41,3 @@ class channel(Module):
             except: pass
         else:
             return "Usage: %spart <channel> [message]" % bot.prefix
-
