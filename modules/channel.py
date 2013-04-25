@@ -23,9 +23,9 @@ class channel(Module):
 
         if len(args) == 1:
             try:
-                self.bot.connection.join(channel)
+                self.bot.connection.join(args[0])
             except:
-                return "Couldn't join channel %s." % channel
+                return "Couldn't join channel %s." % args[0]
         else:
             return "Usage: %sjoin <channel>" % bot.prefix
 
