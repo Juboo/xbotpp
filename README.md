@@ -32,7 +32,6 @@ To compile the documentation yourself, run `./docbuild`.
 
 ## CREDITS
 
-Based on work by [Milos Ivanovic](https://github.com/milosivanovic) and [Daniel Oaks](https://github.com/DannehOaks).
+Based on work by [Milos Ivanovic](https://github.com/milosivanovic) and [Daniel Oaks](https://github.com/DanielOaks).
 
-See the full list of contributors [here](https://github.com/aki--aki/xbotpp/contributors)
-.
+See the full list of contributors [here](https://github.com/aki--aki/xbotpp/contributors).
