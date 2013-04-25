@@ -3,14 +3,15 @@
 from xbotpp.modules import Module
 
 
-class reload(Module):
+class module(Module):
     """\
-    Command module to reload other modules.
+    Command module to interact with bot modules.    
     """
 
     def __init__(self):
         self.bind = [
             ["command", "reload", self.reload, "admin"],
+            ["command", "unload", self.unload, "admin"],
         ]
         Module.__init__(self)
 
@@ -41,6 +42,15 @@ class reload(Module):
             else:
                 return "Failed to reload %s." % ", ".join(failed)
 
+    def unload(self, bot, event, args, buf):
+        """\
+        Unload the given module.
+        """
+
+        if self.bot.modules.unload(args[0]):
+            return "Unloaded %s successfully." % args[0]
+        else:
+            return "Unloading %s failed." % args[0]
 
 class prefix(Module):
     """\
