@@ -1,5 +1,7 @@
 # vim: noai:ts=4:sw=4:expandtab:syntax=python
 
+import traceback
+
 
 class BotIO:
     """\
@@ -45,8 +47,12 @@ class BotIO:
         :type event: :py:class:`irc.client.Event`
         """
 
-        for i, elem in enumerate(self.bot.modules.modules['privmsg']):
-            self.bot.modules.modules['privmsg'][elem][0](self.bot, event, event.arguments[0].split(), "")
+        try:
+            for i, elem in enumerate(self.bot.modules.modules['privmsg']):
+                self.bot.modules.modules['privmsg'][elem][0](self.bot, event, event.arguments[0].split(), "")
+        except:
+            error_message = "Traceback (most recent call last):\n" + '\n'.join(traceback.format_exc().split("\n")[-4:-1])
+            self.bot._debug(error_message, event=event)
 
         if event.arguments[0].startswith(self.bot.prefix):
             args = event.arguments[0][1:]
