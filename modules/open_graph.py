@@ -17,6 +17,13 @@ class open_graph(Module):
         Module.__init__(self)
 
     def scan(self, bot, event, args, buf):
+        """\
+        Searches in a received message for URLs.
+
+        Checks URLs against the list of excluded URLs in the config, and calls :py:func:`do_og` for
+        each non-excluded URL.
+        """
+
         message = " ".join(args)
         excludes = [k.strip() for k in bot.config.get("module: open_graph", "excludes").split(",")]
 
@@ -33,6 +40,12 @@ class open_graph(Module):
                 raise
 
     def do_og(self, url):
+        """\
+        Checks if the given URL matches a registered URL handler and call the handler if it does,
+        otherwise scan the page for Open Graph metadata, falling back to returning the page title
+        if no metadata was found.
+        """
+
         # Check for registered URL modules
         self.bot._debug("Checking for registered URL modules...")
         for module in enumerate(self.bot.modules.modules['url']):

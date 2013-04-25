@@ -51,7 +51,7 @@ class mishimmie(Module):
     def ogscan(self, bot, event, args, buf):
         """\
         Registered URL handler for `shimmie\.katawa-shoujo\.com`.
-        Calls the :py:func:`self.miscan` function to get information on the URL.
+        Calls the :py:func:`miscan` function to get information on the URL.
         """
 
         res = self.miscan(args)
