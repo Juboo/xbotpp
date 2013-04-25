@@ -28,7 +28,7 @@
 
 Available over [here](http://aki--aki.github.io/xbotpp/).
 
-To compile the documentation yourself, run './docbuild`.
+To compile the documentation yourself, run `./docbuild`.
 
 ## CREDITS
 
