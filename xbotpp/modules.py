@@ -100,6 +100,7 @@ class Modules:
         """
 
         self.bot = bot
+        self.actualmodules = {}
         self.modules = {
             "command": {},
             "url": {},
@@ -174,6 +175,7 @@ class Modules:
                 mod.bot = self.bot
                 for type, name, func, perms in mod.bind:
                     self.modules[type][name] = (func, perms)
+                self.actualmodules[member[0]] = mod
                 mod.load()
                 count += 1
 
@@ -197,9 +199,9 @@ class Modules:
         :rtype: bool
         """
 
-        if name not in self.modules:
+        if name not in self.actualmodules:
             return False
 
-        self.modules[name].unload()
-        del self.modules[name]
+        self.actualmodules[name].unload()
+        del self.actualmodules[name]
         return True
