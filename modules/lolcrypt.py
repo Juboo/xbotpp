@@ -19,6 +19,9 @@ class lolcrypt(Module):
         Pass "-d" as the first parameter to de-lolcrypt.
         """
 
+        if len(args) is 0 and buf == "":
+            return "%slolcrypt [-d] <text> or %scommand | lolcrypt [-d]" % (self.bot.prefix, self.bot.prefix)
+
         delol = (len(args) != 0 and args[0] == "-d")
         cipher = list("aeioubcdfghjklmnpqrstvwxyz")
         text = buf if buf != "" else "".join(args[1:]) if delol else "".join(args[0:])
