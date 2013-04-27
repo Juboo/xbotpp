@@ -1,10 +1,10 @@
-# -*- coding: utf-8 -*-
 # vim: noai:ts=4:sw=4:expandtab:syntax=python
 
 import re
 import urllib
 import lxml.html
 from xbotpp.modules import Module
+
 
 class open_graph(Module):
     """\
