@@ -33,7 +33,7 @@ class lolcrypt(Module):
             caps = re.match("[A-Z]", char)
             char = char.lower()
             i = cipher.index(char)
-            if re.match("[" + "".join(cipher[0:4]) + "]", char):
+            if re.match("[" + "".join(cipher[0:5]) + "]", char):
                 if delol:
                     char = cipher[mod(i-2,5)]
                 else:
