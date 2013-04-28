@@ -48,7 +48,7 @@ class lastfm(Module):
             else:
                 return "Who?"
         elif event.source.nick not in self.users and len(args) is 0:
-            return "What?"
+            return "I don't know what your last.fm username is, %s (use %snp <username> to set it)" % (event.source.nick, self.bot.prefix)
         elif len(args) >= 1 and not args[0].startswith("@"):
             user = args[0]
             self.save(event.source.nick, user)
