@@ -18,7 +18,6 @@ class lastfm(Module):
         self.bind = [
             ["command", "np", self.nowplaying, "common"],
         ] 
-        self.users = json.load(open("lastfm.users.json"))
         Module.__init__(self)
 
     def save(self, nick, lastfmuser):
@@ -26,9 +25,10 @@ class lastfm(Module):
         Save an IRC nick paired with a last.fm username to the config.
         """
         
-        self.users[nick] = lastfmuser
+        users = json.load(open("lastfm.users.json"))
+        users[nick] = lastfmuser
         with open("lastfm.users.json", "wt") as f:
-            f.write(json.dumps(self.users))
+            f.write(json.dumps(users))
 
     def nowplaying(self, bot, event, args, buf):
         """\
@@ -42,18 +42,20 @@ class lastfm(Module):
         To get the now playing track of another user, ^np @<nick> can be used.
         """
 
+        users = json.load(open("lastfm.users.json"))
+
         if len(args) >= 1 and args[0].startswith("@"):
-            if args[1:] in self.users:
-                user = self.users[args[1:]]
+            if args[1:] in users:
+                user = users[args[1:]]
             else:
                 return "Who?"
-        elif event.source.nick not in self.users and len(args) is 0:
+        elif event.source.nick not in users and len(args) is 0:
             return "I don't know what your last.fm username is, %s (use %snp <username> to set it)" % (event.source.nick, self.bot.prefix)
         elif len(args) >= 1 and not args[0].startswith("@"):
             user = args[0]
             self.save(event.source.nick, user)
-        elif event.source.nick in self.users:
-            user = self.users[event.source.nick]
+        elif event.source.nick in users:
+            user = users[event.source.nick]
         else:
             return "What?"
 
