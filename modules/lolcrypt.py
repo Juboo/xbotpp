@@ -24,7 +24,7 @@ class lolcrypt(Module):
 
         delol = (len(args) != 0 and args[0] == "-d")
         cipher = list("aeioubcdfghjklmnpqrstvwxyz")
-        text = buf if buf != "" else "".join(args[1:]) if delol else "".join(args[0:])
+        text = buf if buf != "" else " ".join(args[1:]) if delol else " ".join(args[0:])
         mod = lambda a, n: ((a%n)+n)%n
         buf = "" 
 
