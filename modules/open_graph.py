@@ -1,8 +1,9 @@
 # vim: noai:ts=4:sw=4:expandtab:syntax=python
 
 import re
-import urllib
 import lxml.html
+import urllib.parse
+import urllib.request
 from xbotpp.modules import Module
 
 
