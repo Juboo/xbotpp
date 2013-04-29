@@ -1,3 +1,4 @@
 irc
 lxml
+sphinx
 
