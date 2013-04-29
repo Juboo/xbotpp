@@ -1,5 +1,6 @@
 # vim: noai:ts=4:sw=4:expandtab:syntax=python
 
+import os
 import json
 import urllib.request
 import urllib.parse
@@ -15,7 +16,7 @@ class lastfm(Module):
     """
 
     def __init__(self):
-        self.configpath = os.path.join("madules", "conf", "lastfm.users.json")
+        self.configpath = os.path.join("modules", "conf", "lastfm.users.json")
         if not os.path.exists(self.configpath):
             with open(self.configpath, "w+") as f:
                 f.write("{}")
