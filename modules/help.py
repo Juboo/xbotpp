@@ -17,8 +17,14 @@ class help(Module):
         """
 
         bot_commands = []
+        privlevel = "common"
+
+        if len(args) == 1:
+            privlevel = args[0]
 
         for module in enumerate(self.bot.modules.modules['command']):
-            bot_commands.append(module[1])
+            command = self.bot.modules.modules['command'][module[1]]
+            if command[1] == privlevel:
+                bot_commands.append(module[1])
 
         return "Available commands: %s" % ", ".join(bot_commands)
