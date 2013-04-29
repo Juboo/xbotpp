@@ -40,7 +40,7 @@ class Mock(object):
         else:
             return Mock()
 
-for mod_name in ['lxml']:
+for mod_name in ['lxml', 'lxml.html', 'lxml.etree']:
     sys.modules[mod_name] = Mock()
 
 # generate help pages for modules in the modules/ directory
