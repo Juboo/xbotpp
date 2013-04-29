@@ -100,13 +100,14 @@ class Modules:
         """
 
         self.bot = bot
+        self.paths = []
+        self.configpath = ""
         self.actualmodules = {}
         self.modules = {
             "command": {},
             "url": {},
             "privmsg": {},
         }
-        self.paths = []
 
     def add_path(self, path):
         """\
@@ -148,6 +149,7 @@ class Modules:
         """
 
         self.add_path(path)
+        self.configpath = os.path.join(path, "conf")
         modules = self.modules_from_path(path)
         for module in modules:
             status = self.load(module)
