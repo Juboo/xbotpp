@@ -20,7 +20,6 @@ release = xbotpp_version
 
 exclude_patterns = ['_build']
 pygments_style = 'sphinx'
-html_theme = 'nature'
 
 class Mock(object):
     def __init__(self, *args, **kwargs):
