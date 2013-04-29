@@ -13,27 +13,25 @@
 
  - [irc](https://pypi.python.org/pypi/irc)
 
-Modules may have their own dependencies and all of these should be listed in `dependencies.txt`
-so that you can do this:
+To install all dependencies (including module dependencies) run:
 
     pip -r requirements.txt
 
-### OPTIONAL
-
- - To generate documentation: [Sphinx](https://pypi.python.org/pypi/Sphinx)
-
 ## INSTALL
 
-1. Clone the repo
-2. Copy `xbotpp.sample.conf` to `xbotpp.conf` and edit it
-3. Run `./bot`
-4. Enjoy!
+    $ git clone https://github.com/aki--aki/xbotpp.git
+    $ cd xbotpp
+    $ cp xbotpp.sample.conf xbotpp.conf
+    $ vim xbotpp.conf
+    $ ./bot
 
 ## DOCUMENTATION
 
 Available over [here](http://xbotpp.readthedocs.org).
 
-To compile the documentation yourself, run `sphinx-build` in the `doc/` directory.
+To compile the documentation yourself, run:
+
+    sphinx-build -b html doc/ doc/_build
 
 ## CREDITS
 
