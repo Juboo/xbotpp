@@ -9,6 +9,8 @@
 
 [xbot++](//github.com/aki--aki/xbotpp) - the modularised Python 3 IRC bot. Woot!
 
+[![Build Status](https://travis-ci.org/aki--aki/xbotpp.png?branch=master)](https://travis-ci.org/aki--aki/xbotpp)
+
 ## DEPENDENCIES
 
  - [irc](https://pypi.python.org/pypi/irc)
