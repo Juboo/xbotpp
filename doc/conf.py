@@ -22,6 +22,27 @@ exclude_patterns = ['_build']
 pygments_style = 'sphinx'
 html_theme = 'nature'
 
+class Mock(object):
+    def __init__(self, *args, **kwargs):
+        pass
+
+    def __call__(self, *args, **kwargs):
+        return Mock()
+
+    @classmethod
+    def __getattr__(cls, name):
+        if name in ('__file__', '__path__'):
+            return '/dev/null'
+        elif name[0] == name[0].upper():
+            mockType = type(name, (), {})
+            mockType.__module__ = __name__
+            return mockType
+        else:
+            return Mock()
+
+for mod_name in ['lxml']:
+    sys.modules[mod_name] = Mock()
+
 # generate help pages for modules in the modules/ directory
 with open("modules/index.rst", "w") as moduleindex:
     moduleindex.write(".. _modules:\n\n")

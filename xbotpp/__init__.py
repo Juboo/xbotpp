@@ -1,5 +1,6 @@
 # vim: noai:ts=4:sw=4:expandtab:syntax=python
 
+import os
 import irc.bot
 import datetime
 import re
@@ -25,6 +26,9 @@ class Bot(irc.bot.SingleServerIRCBot):
         self.version = 0.1
         self.modules = modules.Modules(self)
         self.botio = botio.BotIO(self)
+
+        if os.environ.get('READTHEDOCS', None) == 'True':
+            self.config.set("bot", "skip_load", "True")
 
         if self.config.has_option("bot", "skip_load"):
             return None
