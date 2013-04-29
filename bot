@@ -10,6 +10,9 @@ from configparser import ConfigParser
 default_cfg = io.StringIO("""\
 [bot]
 prefix = '
+
+[module: open_graph]
+excludes =
 """)
 
 if __name__ == "__main__":

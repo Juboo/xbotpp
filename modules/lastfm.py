@@ -16,15 +16,16 @@ class lastfm(Module):
     """
 
     def __init__(self):
-        self.configpath = os.path.join("modules", "conf", "lastfm.users.json")
+        self.bind = [
+            ["command", "np", self.nowplaying, "common"],
+        ]
+        Module.__init__(self)
+
+    def load(self):
+        self.configpath = os.path.join(self.bot.modules.configpath, "lastfm.users.json")
         if not os.path.exists(self.configpath):
             with open(self.configpath, "w+") as f:
                 f.write("{}")
-
-        self.bind = [
-            ["command", "np", self.nowplaying, "common"],
-        ] 
-        Module.__init__(self)
 
     def save(self, nick, lastfmuser):
         """\
