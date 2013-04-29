@@ -103,7 +103,7 @@ class wolframalpha(Module):
         else:
             return ["No acceptable mathematical result."]
 
-    def get_result(self, query, sub=True):
+    def get_result(self, query):
         """\
         Query WolframAlpha for `query`.
 
