@@ -15,6 +15,11 @@ class lastfm(Module):
     """
 
     def __init__(self):
+        self.configpath = os.path.join("madules", "conf", "lastfm.users.json")
+        if not os.path.exists(self.configpath):
+            with open(self.configpath, "w+") as f:
+                f.write("{}")
+
         self.bind = [
             ["command", "np", self.nowplaying, "common"],
         ] 
@@ -25,9 +30,9 @@ class lastfm(Module):
         Save an IRC nick paired with a last.fm username to the config.
         """
         
-        users = json.load(open("lastfm.users.json"))
+        users = json.load(open(self.configpath))
         users[nick] = lastfmuser
-        with open("lastfm.users.json", "wt") as f:
+        with open(self.configpath, "w+") as f:
             f.write(json.dumps(users))
 
     def nowplaying(self, bot, event, args, buf):
@@ -42,11 +47,11 @@ class lastfm(Module):
         To get the now playing track of another user, ^np @<nick> can be used.
         """
 
-        users = json.load(open("lastfm.users.json"))
+        users = json.load(open(self.configpath))
 
         if len(args) >= 1 and args[0].startswith("@"):
-            if args[1:] in users:
-                user = users[args[1:]]
+            if args[0][1:] in users:
+                user = users[args[0][1:]]
             else:
                 return "Who?"
         elif event.source.nick not in users and len(args) is 0:

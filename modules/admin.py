@@ -78,3 +78,25 @@ class prefix(Module):
                 self.bot.connection.notice(event.target, "Hi, I'm a bot! Try using %shelp to see what I can do." % self.bot.prefix)
         except:
             pass
+
+class misc(Module):
+    """\
+    Miscellaneous admin commands.
+    """
+
+    def __init__(self):
+        self.bind = [
+            ["command", "eval", self.eval, "admin"],
+        ]
+        Module.__init__(self)
+
+    def eval(self, bot, event, args, buf):
+        if len(args[0]) is 0:
+            return "%seval <herp>" % self.bot.prefix
+        else:
+            ret = eval(" ".join(args))
+            if not isinstance(ret, str):
+                ret = str(ret, 'utf-8')
+            return ret
+
+
