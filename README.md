@@ -31,9 +31,9 @@ so that you can do this:
 
 ## DOCUMENTATION
 
-Available over [here](http://aki--aki.github.io/xbotpp/).
+Available over [here](http://xbotpp.readthedocs.org).
 
-To compile the documentation yourself, run `./docbuild`.
+To compile the documentation yourself, run `sphinx-build` in the `doc/` directory.
 
 ## CREDITS
 
