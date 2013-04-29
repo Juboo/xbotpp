@@ -13,6 +13,11 @@
 
  - [irc](https://pypi.python.org/pypi/irc)
 
+Modules may have their own dependencies and all of these should be listed in `dependencies.txt`
+so that you can do this:
+
+    pip -r requirements.txt
+
 ### OPTIONAL
 
  - To generate documentation: [Sphinx](https://pypi.python.org/pypi/Sphinx)
