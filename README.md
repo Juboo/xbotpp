@@ -17,7 +17,10 @@
 
 To install all dependencies (including module dependencies) run:
 
-    pip -r requirements.txt
+    $ pip install -r requirements.txt
+    
+    # or just core dependencies
+    $ pip install -r core_dependencies.txt
 
 ## INSTALL
 
@@ -33,7 +36,7 @@ Available over [here](http://xbotpp.readthedocs.org).
 
 To compile the documentation yourself, run:
 
-    sphinx-build -b html doc/ doc/_build
+    $ sphinx-build -b html doc/ doc/_build
 
 ## CREDITS
 
