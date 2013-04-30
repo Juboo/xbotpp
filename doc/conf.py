@@ -67,8 +67,9 @@ with open("modules/index.rst", "w") as moduleindex:
             mod.write("=" * len(obj) + "\n\n")
             for member in inspect.getmembers(module, isModule):
                 titlestr = member[1]().name
-                mod.write(titlestr + "\n")
-                mod.write("-" * len(titlestr) + "\n\n")
+                if titlestr != obj:
+                    mod.write(titlestr + "\n")
+                    mod.write("-" * len(titlestr) + "\n\n")
                 
                 bind = { "command": [], "url": [], "privmsg": [] }
                 for line in member[1]().bind:
