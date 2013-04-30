@@ -29,12 +29,13 @@ class lolcrypt(Module):
         buf = "" 
 
         for char in text:
+            caps = char.upper() == char
+            char = char.lower()
+            
             if not char in cipher:
                 buf += char
                 continue
 
-            caps = re.match("[A-Z]", char)
-            char = char.lower()
             i = cipher.index(char)
             if re.match("[" + "".join(cipher[0:5]) + "]", char):
                 if delol:
