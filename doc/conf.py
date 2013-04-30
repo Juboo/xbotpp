@@ -5,7 +5,11 @@ import sys, os, importlib, io, inspect
 sys.path.insert(0, os.path.abspath('..'))
 xbotpp_config = importlib.import_module("configparser").ConfigParser()
 xbotpp_config.readfp(io.StringIO("[bot]\nprefix=!\nskip_load=True"))
-xbotpp_version = importlib.import_module("xbotpp").Bot(xbotpp_config).version
+
+from xbotpp import Bot
+from xbotpp.modules import Module, Modules
+
+xbotpp_version = Bot(xbotpp_config).version
 
 extensions = ['sphinx.ext.autodoc', 'sphinx.ext.viewcode']
 templates_path = ['_templates']
@@ -43,17 +47,46 @@ for mod_name in ['lxml', 'lxml.html', 'lxml.etree']:
     sys.modules[mod_name] = Mock()
 
 # generate help pages for modules in the modules/ directory
+
+def isModule(member):
+    if member in Module.__subclasses__():
+        return True
+    return False
+
 with open("modules/index.rst", "w") as moduleindex:
-    moduleindex.write(".. _modules:\n\n")
+    moduleindex.write(".. _moduledocs:\n\n")
     moduleindex.write("Modules\n")
     moduleindex.write("=======\n\n")
     moduleindex.write(".. toctree::\n")
 
-    for obj in importlib.import_module("xbotpp").modules.Modules("").modules_from_path(os.path.join('..', 'modules')):
+    for obj in Modules("").modules_from_path(os.path.join('..', 'modules')):
         module = importlib.import_module("modules.%s" % obj)
         moduleindex.write("    " + obj + "\n")
         with open("modules/%s.rst" % obj, 'w') as mod:
             mod.write(obj + "\n")
             mod.write("=" * len(obj) + "\n\n")
-            mod.write(".. automodule:: modules.%s\n" % obj)
-            mod.write("   :members:\n")
+            for member in inspect.getmembers(module, isModule):
+                titlestr = "modules.%s.%s" % (obj, member[1]().name)
+                mod.write(titlestr + "\n")
+                mod.write("-" * len(titlestr) + "\n\n")
+                
+                bind = { "command": [], "url": [], "privmsg": [] }
+                for line in member[1]().bind:
+                    bind[line[0]].append("%s (%s)" % (line[1], line[2].__name__))
+
+                command = ", ".join(bind['command'])
+                url = ", ".join(bind['url'])
+                privmsg = ", ".join(bind['privmsg'])
+
+                mod.write("Bound functions\n")
+                mod.write("~~~~~~~~~~~~~~~\n\n")
+                mod.write("- Commands: %s\n" % (command if command != "" else "none"))
+                mod.write("- URLs: %s\n" % (url if url != "" else "none"))
+                mod.write("- Message handlers: %s\n" % (privmsg if privmsg != "" else "none"))
+                mod.write("\n")
+
+                mod.write("Module documentation\n")
+                mod.write("~~~~~~~~~~~~~~~~~~~~\n\n")
+                mod.write(".. autoclass:: %s\n" % titlestr)
+                mod.write("   :members:\n\n")
+
