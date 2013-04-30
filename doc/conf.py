@@ -66,13 +66,13 @@ with open("modules/index.rst", "w") as moduleindex:
             mod.write(obj + "\n")
             mod.write("=" * len(obj) + "\n\n")
             for member in inspect.getmembers(module, isModule):
-                titlestr = "modules.%s.%s" % (obj, member[1]().name)
+                titlestr = member[1]().name
                 mod.write(titlestr + "\n")
                 mod.write("-" * len(titlestr) + "\n\n")
                 
                 bind = { "command": [], "url": [], "privmsg": [] }
                 for line in member[1]().bind:
-                    bind[line[0]].append("%s (%s)" % (line[1], line[2].__name__))
+                    bind[line[0]].append("%s (`%s`)" % (line[1], line[2].__name__))
 
                 command = ", ".join(bind['command'])
                 url = ", ".join(bind['url'])
@@ -87,6 +87,6 @@ with open("modules/index.rst", "w") as moduleindex:
 
                 mod.write("Module documentation\n")
                 mod.write("~~~~~~~~~~~~~~~~~~~~\n\n")
-                mod.write(".. autoclass:: %s\n" % titlestr)
+                mod.write(".. autoclass:: modules.%s.%s\n" % (obj, titlestr))
                 mod.write("   :members:\n\n")
 
