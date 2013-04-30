@@ -2,5 +2,8 @@ language: python
 python:
     - "3.2"
     - "3.3"
+install:
+    - "pip -r core_requirements.txt --use-mirrors"
 script:
+    - "nosetests"
     - "sphinx-build -b html doc/ doc/_build"
