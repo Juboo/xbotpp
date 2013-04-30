@@ -1,4 +1,3 @@
-irc
+-r core_requirements.txt
 lxml
-sphinx
 
