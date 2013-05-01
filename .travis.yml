@@ -6,11 +6,9 @@ install:
     - "pip install -r core_requirements.txt --use-mirrors"
 script:
     - "nosetests"
-    - "sphinx-build -b html doc/ doc/_build"
 notifications:
     email: false
     irc:
         channels:
             - "irc.freenode.net#xbotpp"
-            - "irc.freenode.net##xbotpp"
 

@@ -1,4 +1,3 @@
 irc
-sphinx
 nose
 
