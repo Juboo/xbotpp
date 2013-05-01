@@ -7,9 +7,9 @@ Contents:
    :maxdepth: 2
 
    internal/index
+   moduleapi
    modules/index
    howto/index
-   moduleapi
 
 Indices and tables
 ==================

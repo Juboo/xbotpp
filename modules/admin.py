@@ -17,7 +17,7 @@ class module(Module):
 
     def reload(self, bot, event, args, buf):
         """\
-        Call :py:func:`xbotpp.modules.Modules.load(arg)` for each argument, returning a formatted
+        Call :py:func:`xbotpp.modules.Modules.load` for each argument, returning a formatted
         string with the list of modules that were successfully loaded (if any) and the list of
         modules that failed to load (if any).
 

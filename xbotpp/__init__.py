@@ -23,7 +23,7 @@ class Bot(irc.bot.SingleServerIRCBot):
         self.config = config
         self.prefix = config.get('bot', 'prefix')
         self.debug = False
-        self.version = "v0.1.2"
+        self.version = "v0.1.3-alpha"
         self.modules = modules.Modules(self)
         self.botio = botio.BotIO(self)
 
@@ -59,6 +59,24 @@ class Bot(irc.bot.SingleServerIRCBot):
         self.connection.add_global_handler('privnotice', self.on_notice)
 
     def _log(self, buffer, mode=""):
+        """\
+        Log data to the bot's stdout.
+
+        Log entries look like this::
+
+            May 02 2013 05:50:46 <<< PING :wright.freenode.net
+
+        The ``>>>`` in the text is determined by the `mode` parameter:
+
+        - ``mode="out"`` makes this indicator ``>>>```
+        - ``mode="in"`` makes this indicator ``<<<```
+        - Any other mode makes this indicator ``---```
+
+        The indicator is only shown on the first line of each log entry.
+
+        The `buffer` argument can either be a string or a list of lines.
+        """
+
         log = datetime.datetime.now().strftime("%b %d %Y %H:%M:%S")
 
         if mode == "out":
@@ -69,17 +87,28 @@ class Bot(irc.bot.SingleServerIRCBot):
             _pad = "---"
 
         if isinstance(buffer, str):
-            buffer = [buffer.split("\n")]
+            buffer = buffer.split("\n")
 
         for index, line in enumerate(buffer):
             print("%s %s %s" % (log, _pad if index == 0 else "   ", line))
 
     def _debug(self, message, event=None):
+        """\
+        Logs debug information to stdout, and if the `bot.debug` flag is enabled,
+        sends it to the event source from the given event.
+        """
+
         if self.debug and event:
             self.connection.notice(event.source, message)
         self._log(message)
 
     def get_version(self):
+        """\
+        Return the bot version.
+
+        :rtype: str
+        """
+
         return "xbotpp %s" % str(self.version)
 
     def on_nicknameinuse(self, client, event):
@@ -102,6 +131,11 @@ class Bot(irc.bot.SingleServerIRCBot):
         self._log(event.arguments[0], "in")
 
     def _read(self, client, event):
+        """\
+        Call :py:func:`xbotpp.botio.BotIO.read` for any messages received,
+        and handle exceptions that may be raised.
+        """
+
         try:
             self.botio.read(client, event)
         except:

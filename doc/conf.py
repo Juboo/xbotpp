@@ -63,6 +63,7 @@ with open("modules/index.rst", "w") as moduleindex:
         module = importlib.import_module("modules.%s" % obj)
         moduleindex.write("    " + obj + "\n")
         with open("modules/%s.rst" % obj, 'w') as mod:
+            mod.write(".. _module_%s:\n\n" % obj)
             mod.write(obj + "\n")
             mod.write("=" * len(obj) + "\n\n")
             for member in inspect.getmembers(module, isModule):
