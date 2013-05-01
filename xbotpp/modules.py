@@ -24,16 +24,16 @@ class Module:
 
         self.bind = self.bind if getattr(self, "bind", None) else [["command", self.name, self.action, "common"]]
         """\
-        A list of bot functions to bind to. Each entry is of the format:
+        A list of bot functions to bind to. Each entry is of the format::
 
-            [ `type`, `name`, `callback`, `permission_level` ]
+            [ type, name, callback, permission_level ]
 
-        * `type` is one of "command", "url", "privmsg".
-        * `name` is the name of the command in case of `type == "command"`,
+        * ``type`` is one of "command", "url", "privmsg".
+        * ``name`` is the name of the command in case of `type == "command"`,
            the regular expression to match a URL as a string in case of `type == "url"`,
            else the friendly name for the callback.
-        * `callback` is the function to call (with parameters of :py:func:`xbotpp.modules.Module.action`)
-        * `permission_level` is one of "common", "admin".
+        * ``callback`` is the function to call (with parameters of :py:func:`xbotpp.modules.Module.action`)
+        * ``permission_level`` is one of "common", "admin".
         """
 
     def action(self, bot, event, args, buf):
@@ -157,8 +157,14 @@ class Modules:
 
     def load(self, name):
         """\
-        Load the module named `name`, looking in the search path for the module, and calls the
-        module's :py:func:`load() <xbotpp.modules.Module.load()>` function after loading it.
+        Load the module named `name`.
+
+        This function imports the named module, and searches for module classes within the module
+        file. For each class found, we initialize it, set it's `self.bot` item to the Bot object,
+        and iterate through the module's `self.bind` list, and store each item in the bind list
+        with it's associated metadata in the `modules.modules` dictionary. We then store the
+        module itself it the `modules.actualmodules` dictionary, and call the module's
+        :py:func:`xbotpp.modules.Module.load` function.
 
         Returns :py:const:`True` on success, :py:const:`False` on failure.
 
@@ -191,8 +197,12 @@ class Modules:
 
     def unload(self, name):
         """\
-        Unload the module `name`, calling the module's :py:func:`unload() <xbotpp.modules.Module.unload()>`
-        function before doing so.
+        Unload the module `name`.
+
+        Recursively looks through the `modules.modules` dictionary for items that were created
+        by the named module, and removes them, before calling the module's
+        :py:func:`xbotpp.modules.Module.unload` function and deleting the module from the 
+        `modules.actualmodules` dictionary.
 
         Returns :py:const:`True` on success, :py:const:`False` on failure.
 
@@ -225,3 +235,4 @@ class Modules:
 
         except:
             return False
+
