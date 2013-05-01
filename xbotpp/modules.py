@@ -175,9 +175,9 @@ class Modules:
             for member in inspect.getmembers(module, isModule):
                 mod = member[1]()
                 mod.bot = self.bot
-                for type, name, func, perms in mod.bind:
-                    self.modules[type][name] = (func, perms)
-                self.actualmodules[member[0]] = mod
+                for type, bname, func, perms in mod.bind:
+                    self.modules[type][bname] = (func, perms)
+                self.actualmodules[member[0]] = (name, mod)
                 mod.load()
                 count += 1
 
