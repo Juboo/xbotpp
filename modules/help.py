@@ -11,6 +11,7 @@ class help(Module):
 
     def __init__(self):
         self.bind = [
+            ["command", "help", self.list, "common"],
             ["command", "list", self.list, "common"],
             ["command", "man", self.man, "common"],
         ]
