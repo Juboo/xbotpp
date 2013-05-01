@@ -9,5 +9,10 @@ class info(Module):
         Module.__init__(self)
 
     def action(self, bot, event, args, buf):
+        """\
+        Output a JSON string of the [bot] config section.
+        Used for debugging.
+        """
+
         pretty_json = json.dumps(self.bot.config.items("bot"))
         return pretty_json
