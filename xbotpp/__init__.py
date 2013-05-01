@@ -23,7 +23,7 @@ class Bot(irc.bot.SingleServerIRCBot):
         self.config = config
         self.prefix = config.get('bot', 'prefix')
         self.debug = False
-        self.version = 0.1.1
+        self.version = "v0.1.2"
         self.modules = modules.Modules(self)
         self.botio = botio.BotIO(self)
 
