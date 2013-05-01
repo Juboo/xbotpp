@@ -23,7 +23,7 @@ class Bot(irc.bot.SingleServerIRCBot):
         self.config = config
         self.prefix = config.get('bot', 'prefix')
         self.debug = False
-        self.version = 0.1
+        self.version = 0.1.1
         self.modules = modules.Modules(self)
         self.botio = botio.BotIO(self)
 
@@ -69,7 +69,7 @@ class Bot(irc.bot.SingleServerIRCBot):
             _pad = "---"
 
         if isinstance(buffer, str):
-            buffer = [buffer]
+            buffer = [buffer.split("\n")]
 
         for index, line in enumerate(buffer):
             print("%s %s %s" % (log, _pad if index == 0 else "   ", line))
