@@ -176,7 +176,7 @@ class Modules:
                 mod = member[1]()
                 mod.bot = self.bot
                 for type, bname, func, perms in mod.bind:
-                    self.modules[type][bname] = (func, perms)
+                    self.modules[type][bname] = (func, perms, member[0], name)
                 self.actualmodules[member[0]] = (name, mod)
                 mod.load()
                 count += 1
@@ -201,9 +201,24 @@ class Modules:
         :rtype: bool
         """
 
-        if name not in self.actualmodules:
-            return False
+        try:
+            del_list = []
+            for obj in self.actualmodules:
+                for type in self.modules:
+                    for mod in self.modules[type]:
+                        if self.modules[type][mod][2] == name:
+                            del_list.append((type, mod))
 
-        self.actualmodules[name].unload()
-        del self.actualmodules[name]
-        return True
+            for type, mod in del_list:
+                try:
+                    del self.modules[type][mod]
+                    self.bot._debug("Deleting %s module: %s" % (type, mod))
+                except KeyError:
+                    pass
+
+            self.actualmodules[obj][1].unload()
+            del self.actualmodules[obj]
+            return True
+
+        except:
+            return False
