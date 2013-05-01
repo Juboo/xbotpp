@@ -47,27 +47,64 @@ class lastfm(Module):
         For a user to set their last.fm username, they can use ^np <username>.
 
         To get the now playing track of another user, ^np @<nick> can be used.
+
+        ^np * will also get the new playing tracks of every person in the channel
+        who has set their last.fm username.
         """
 
         users = json.load(open(self.configpath))
+        searchusers = {}
 
-        if len(args) >= 1 and args[0].startswith("@"):
+        if buf != "":
+            args = buf.split()
+
+        if len(args) is 1 and args[0] == "*":
+            for user in self.bot.channels[event.target].users():
+                if user in users:
+                    searchusers[user] = users[user]
+        elif len(args) >= 1 and args[0].startswith("@"):
             if args[0][1:] in users:
-                user = users[args[0][1:]]
+                searchusers[args[0][1:]] = users[args[0][1:]]
             else:
                 return "Who?"
         elif event.source.nick not in users and len(args) is 0:
             return "I don't know what your last.fm username is, %s (use %snp <username> to set it)" % (event.source.nick, self.bot.prefix)
         elif len(args) >= 1 and not args[0].startswith("@"):
-            user = args[0]
-            self.save(event.source.nick, user)
+            searchusers[event.source.nick] = args[0]
+            self.save(event.source.nick, args[0])
         elif event.source.nick in users:
-            user = users[event.source.nick]
+            searchusers[event.source.nick] = users[event.source.nick]
         else:
             return "What?"
 
+        ret = []
+
+        for obj in searchusers:
+            res = self.getlastfm(searchusers[obj])
+            if res != None:
+                if len(searchusers) is 1:
+                    ret.append(res)
+                else:
+                    ret.append("%s: %s" % (obj, res))
+            else:
+                if len(searchusers) is 1:
+                    ret.append("I couldn't get the last.fm info for %s (try setting your username again?)" % obj)
+                else:
+                    pass
+
+        return "\n".join(ret)
+
+    def getlastfm(self, user):
+        """\
+        Query last.fm for information on the given user.
+        Used internally by the :py:func:`nowplaying` function.
+
+        :param user: str
+        """
+
         try:
             url = "http://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=%s&api_key=%s&format=json" % (urllib.parse.quote(user), self.bot.config.get("module: lastfm", "apikey"))
+            print(url)
             data = json.loads(str(urllib.request.urlopen(url).read(), 'utf-8'))
             track = data["recenttracks"]["track"][0]
             if "@attr" in track:
@@ -76,11 +113,8 @@ class lastfm(Module):
                 status = "was previously listening to"
             title = track["name"]
             artist = "by %s" % track["artist"]["#text"] if track["artist"]["#text"] else ""
-            album = "from %s" % track["album"]["#text"] if track["album"]["#text"] else ""
-            
+            album = "from %s" % track["album"]["#text"] if track["album"]["#text"] else ""            
             return "%s %s %s %s %s" % (user, status, title, artist, album)
-
         except:
-            raise
-
-    
+            return None
+ 

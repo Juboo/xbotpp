@@ -66,6 +66,10 @@ class prefix(Module):
         Module.__init__(self)
 
     def action(self, bot, event, args, buf):
+        """\
+        Set the prefix to the given character.
+        """
+
         if len(args[0]) == 1:
             self.bot.prefix = args[0]
             return "Prefix set to %s." % args[0]
@@ -73,6 +77,11 @@ class prefix(Module):
             return "Invalid prefix."
 
     def privmsg(self, bot, event, args, buf):
+        """\
+        Respond to messages mentioning the bot's name and the word "help" with
+        a message containing the current command prefix.
+        """
+
         try:
             if self.bot.connection.get_nickname() in args[0] and "help" in args[1]:
                 self.bot.connection.notice(event.target, "Hi, I'm a bot! Try using %shelp to see what I can do." % self.bot.prefix)
@@ -91,6 +100,10 @@ class misc(Module):
         Module.__init__(self)
 
     def eval(self, bot, event, args, buf):
+        """\
+        Evaluate the given Python code in the current context.
+        """
+
         if len(args[0]) is 0:
             return "%seval <herp>" % self.bot.prefix
         else:

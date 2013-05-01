@@ -20,6 +20,11 @@ class wolframalpha(Module):
         self.apikey = self.bot.config.get("module: wolframalpha", "apikey")
 
     def parse_result(self, result):
+        """\
+        Search the WolframAlpha API data for a sane data value from a predefined set of
+        "good" data (ie. data that is formatted well enough to be piped into an IRC channel)
+        """
+
         acceptable = [
             'Result',
             'Results',
@@ -125,6 +130,12 @@ class wolframalpha(Module):
         return result
 
     def calc(self, bot, event, args, buf):
+        """\
+        Call the :py:func:`get_result` function with the arguments or the input buffer
+        (if present) and return the result. If no input is specified, return basic help
+        on the command.
+        """
+
         query = ""
 
         if buf != "":
