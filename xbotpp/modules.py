@@ -202,6 +202,9 @@ class Modules:
         """
 
         try:
+            if name not in self.actualmodules:
+                return False
+
             del_list = []
             for obj in self.actualmodules:
                 for type in self.modules:
