@@ -55,6 +55,8 @@ class Bot(irc.bot.SingleServerIRCBot):
         self._debug("Realname: %s" % realname)
 
         irc.bot.SingleServerIRCBot.__init__(self, hosts, nick, realname)
+        self.connection.add_global_handler('pubnotice', self.on_notice)
+        self.connection.add_global_handler('privnotice', self.on_notice)
 
     def _log(self, buffer, mode=""):
         log = datetime.datetime.now().strftime("%b %d %Y %H:%M:%S")
@@ -91,6 +93,9 @@ class Bot(irc.bot.SingleServerIRCBot):
         self._read(client, event)
 
     def on_privmsg(self, client, event):
+        self._read(client, event)
+
+    def on_notice(self, client, event):
         self._read(client, event)
 
     def on_all_raw_messages(self, client, event):
