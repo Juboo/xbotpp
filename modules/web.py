@@ -5,15 +5,19 @@ import urllib.request
 from xbotpp.modules import Module
 
 
-class sprunge(Module):
+class web(Module):
     """\
-    Sprunge pastebin module
+    Modules to interface with the World Wide Web (oooo)
     """
 
     def __init__(self):
+        self.bind = [
+            ["command", "sprunge", self.sprunge, "common"],
+            ["command", "curl", self.curl, "common"],
+        ]
         Module.__init__(self)
 
-    def action(self, bot, event, args, buf):
+    def sprunge(self, bot, event, args, buf):
         """\
         Paste the input buffer to sprunge.us and return a link to the paste.
 
@@ -24,3 +28,13 @@ class sprunge(Module):
         req = urllib.request.Request("http://sprunge.us", bytes(data.encode('utf-8')))
         url = urllib.request.urlopen(req).read().strip()
         return str(url, 'utf-8')
+
+    def curl(self, bot, event, args, buf):
+        """\
+        Get the content of a URL given as the argument(s) to the command and
+        return it.
+        """
+
+        req = urllib.request.urlopen(" ".join(args)).read().strip()
+        return str(req, 'utf-8')
+
