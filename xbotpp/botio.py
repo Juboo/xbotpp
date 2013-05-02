@@ -72,5 +72,14 @@ class BotIO:
                 buf = self.bot.modules.modules['command'][command][0](self.bot, event, cmdargs, buf)
 
             self.bot._log("%s -> %s" % (event.target, buf), "out")
-            for line in buf.split("\n"):
+
+            lines = buf.split("\n")
+            for index, line in enumerate(lines):
+                if len(lines) > 5:
+                    __import__("time").sleep(0.2)
+
+                if index > 10:
+                    client.privmsg(event.target, "[%d more lines omitted]" % (len(lines) - index))
+                    break
+
                 client.privmsg(event.target, line)

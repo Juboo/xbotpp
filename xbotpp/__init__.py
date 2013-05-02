@@ -2,6 +2,7 @@
 
 import os
 import irc.bot
+import irc.client
 import datetime
 import re
 import signal
@@ -57,6 +58,10 @@ class Bot(irc.bot.SingleServerIRCBot):
         irc.bot.SingleServerIRCBot.__init__(self, hosts, nick, realname)
         self.connection.add_global_handler('pubnotice', self.on_notice)
         self.connection.add_global_handler('privnotice', self.on_notice)
+
+        LineBuffer = irc.buffer.DecodingLineBuffer
+        LineBuffer.errors = 'replace'
+        self.connection.buffer_class = LineBuffer
 
     def _log(self, buffer, mode=""):
         """\
