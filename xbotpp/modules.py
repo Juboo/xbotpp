@@ -50,7 +50,7 @@ class Module:
         A list of BoundCommand objects, containing the commands in this module for the bot to bind to.
         """
 
-    def bind_command(self, name, func, privlevel, type):
+    def bind_command(self, name, func, privlevel="common", type="command"):
         """\
         Bind a command.
         """
