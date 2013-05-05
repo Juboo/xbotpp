@@ -242,7 +242,7 @@ class Modules:
                 for type in self.modules:
                     for mod in enumerate(self.modules[type]):
                         if self.modules[type][mod].parent['parent'] == name:
-                            del_list.append((type, mod]))
+                            del_list.append((type, mod))
 
             for type, mod in del_list:
                 try:
