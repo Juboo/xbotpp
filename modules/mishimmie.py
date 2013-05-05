@@ -18,7 +18,7 @@ class mishimmie(Module):
         """
 
         self.bind_command("mi", self.search)
-        self.bind_command("shimmie\.katawa-shoujo\.com", self.ogscan)
+        self.bind_command("shimmie\.katawa-shoujo\.com", self.ogscan, "", "url")
         Module.__init__(self)
 
     def search(self, bot, event, args, buf):

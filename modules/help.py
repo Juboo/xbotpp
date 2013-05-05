@@ -28,7 +28,7 @@ class help(Module):
 
         for module in enumerate(self.bot.modules.modules['command']):
             command = self.bot.modules.modules['command'][module[1]]
-            if command[1] == privlevel:
+            if command.privlevel == privlevel:
                 bot_commands.append(module[1])
 
         return "Available commands: %s" % ", ".join(bot_commands)
