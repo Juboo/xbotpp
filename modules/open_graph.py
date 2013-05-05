@@ -21,10 +21,7 @@ class open_graph(Module):
             return "HEAD"
 
     def __init__(self):
-        self.bind = [
-            ["privmsg", "open_graph", self.scan, "common"],
-        ]
-
+        self.bind_command("open_graph", self.scan, "", "privmsg")
         Module.__init__(self)
 
     def scan(self, bot, event, args, buf):

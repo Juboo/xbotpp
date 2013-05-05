@@ -16,9 +16,7 @@ class lastfm(Module):
     """
 
     def __init__(self):
-        self.bind = [
-            ["command", "np", self.nowplaying, "common"],
-        ]
+        self.bind_command("np", self.nowplaying)
         Module.__init__(self)
 
     def load(self):

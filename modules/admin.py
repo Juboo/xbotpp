@@ -9,10 +9,8 @@ class module(Module):
     """
 
     def __init__(self):
-        self.bind = [
-            ["command", "reload", self.reload, "admin"],
-            ["command", "unload", self.unload, "admin"],
-        ]
+        self.bind_command("reload", self.reload, "admin")
+        self.bind_command("unload", self.unload, "admin")
         Module.__init__(self)
 
     def reload(self, bot, event, args, buf):
@@ -35,12 +33,12 @@ class module(Module):
             else:
                 failed.append(mod)
 
-            if len(failed) == 0 and len(done) > 0:
-                return "Reloaded %s." % ", ".join(done)
-            elif len(failed) > 0 and len(done) > 0:
-                return "Reloaded %s but failed to reload %s." % (", ".join(failed), ", ".join(done))
-            else:
-                return "Failed to reload %s." % ", ".join(failed)
+        if len(failed) == 0 and len(done) > 0:
+            return "Reloaded %s." % ", ".join(done)
+        elif len(failed) > 0 and len(done) > 0:
+            return "Reloaded %s but failed to reload %s." % (", ".join(failed), ", ".join(done))
+        else:
+            return "Failed to reload %s." % ", ".join(failed)
 
     def unload(self, bot, event, args, buf):
         """\
@@ -58,11 +56,8 @@ class prefix(Module):
     """
 
     def __init__(self):
-        self.perms = "admin"
-        self.bind = [
-            ["command", "prefix", self.action, "admin"],
-            ["privmsg", "prefix", self.privmsg, "common"],
-        ]
+        self.bind_command("prefix", self.action, "admin")
+        self.bind_command("prefix", self.privmsg, "", "privmsg")
         Module.__init__(self)
 
     def action(self, bot, event, args, buf):
@@ -94,9 +89,7 @@ class misc(Module):
     """
 
     def __init__(self):
-        self.bind = [
-            ["command", "eval", self.eval, "admin"],
-        ]
+        self.bind_command("eval", self.eval, "admin")
         Module.__init__(self)
 
     def eval(self, bot, event, args, buf):

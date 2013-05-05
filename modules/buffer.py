@@ -10,11 +10,9 @@ class buffer(Module):
     """
 
     def __init__(self):
-        self.bind = [
-            ["command", "echo", self.echo, "common"],
-            ["command", "grep", self.grep, "common"],
-            ["command", "tee", self.tee, "common"],
-        ]
+        self.bind_command("echo", self.echo)
+        self.bind_command("grep", self.grep)
+        self.bind_command("tee", self.tee)
         Module.__init__(self)
 
     def echo(self, bot, event, args, buf):

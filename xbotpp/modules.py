@@ -6,6 +6,29 @@ import imp
 import inspect
 import importlib
 
+class BoundCommand(object):
+    """\
+    Contains information about a command to bind to a bot function.
+
+    - ``name`` is the name of the command, or the regex to match a URL
+      if the module is a URL module. This is ignored for message handler modules.
+    - ``func`` is the function to call (with parameters of :py:func:`xbotpp.modules.Module.action`)
+    - ``privlevel`` is the permission level of the command, which can be
+      either of `common` for normal commands or `admin` for admin-level commands.
+      This is ignored for URL handlers and message handlers.
+    - ``type`` is the type of command (see :ref:`commandtypes`)
+    """
+
+    def __init__(self, name, func, privlevel="common", type="command", parent=None):
+        self.name = name
+        self.func = func
+        self.privlevel = privlevel
+        self.type = type
+
+        if parent = None:
+            self.parent = {"parent": None, "basename": None}
+        else:
+            self.parent = parent
 
 class Module:
     """\
@@ -22,19 +45,17 @@ class Module:
         The name of the module. Defaults to the class name if not explicitly specified.
         """
 
-        self.bind = self.bind if getattr(self, "bind", None) else [["command", self.name, self.action, "common"]]
+        self.bind = self.bind if getattr(self, "bind", None) else [BoundCommand(self.name, self.action)]
         """\
-        A list of bot functions to bind to. Each entry is of the format::
-
-            [ type, name, callback, permission_level ]
-
-        * ``type`` is one of "command", "url", "privmsg".
-        * ``name`` is the name of the command in case of `type == "command"`,
-           the regular expression to match a URL as a string in case of `type == "url"`,
-           else the friendly name for the callback.
-        * ``callback`` is the function to call (with parameters of :py:func:`xbotpp.modules.Module.action`)
-        * ``permission_level`` is one of "common", "admin".
+        A list of BoundCommand objects, containing the commands in this module for the bot to bind to.
         """
+
+    def bind_command(self, name, func, privlevel, type):
+        """\
+        Bind a command.
+        """
+
+        self.bind.append(BoundCommand(name, func, privlevel, type, None))
 
     def action(self, bot, event, args, buf):
         """\
@@ -181,8 +202,9 @@ class Modules:
             for member in inspect.getmembers(module, isModule):
                 mod = member[1]()
                 mod.bot = self.bot
-                for type, bname, func, perms in mod.bind:
-                    self.modules[type][bname] = (func, perms, member[0], name)
+                for command in mod.bind:
+                    command.parent = {'parent': member[0], 'basename': name}
+                    self.modules[type][command.name] = command
                 self.actualmodules[member[0]] = (name, mod)
                 mod.load()
                 count += 1
@@ -218,14 +240,14 @@ class Modules:
             del_list = []
             for obj in self.actualmodules:
                 for type in self.modules:
-                    for mod in self.modules[type]:
-                        if self.modules[type][mod][2] == name:
-                            del_list.append((type, mod))
+                    for mod in enumerate(self.modules[type]):
+                        if self.modules[type][mod].parent['parent'] == name:
+                            del_list.append((type, mod]))
 
             for type, mod in del_list:
                 try:
-                    del self.modules[type][mod]
                     self.bot._debug("Deleting %s module: %s" % (type, mod))
+                    del self.modules[type][mod]
                 except KeyError:
                     pass
 
