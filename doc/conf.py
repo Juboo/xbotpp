@@ -74,7 +74,7 @@ with open("modules/index.rst", "w") as moduleindex:
                 
                 bind = { "command": [], "url": [], "privmsg": [] }
                 for line in member[1]().bind:
-                    bind[command.type].append("%s (`%s`)" % (line.name, line.func.__name__))
+                    bind[line.type].append("%s (`%s`)" % (line.name, line.func.__name__))
 
                 command = ", ".join(bind['command'])
                 url = ", ".join(bind['url'])
