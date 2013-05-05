@@ -10,11 +10,9 @@ class help(Module):
     """
 
     def __init__(self):
-        self.bind = [
-            ["command", "help", self.list, "common"],
-            ["command", "list", self.list, "common"],
-            ["command", "man", self.man, "common"],
-        ]
+        self.bind_command("help", self.list)
+        self.bind_command("list", self.list)
+        self.bind_command("man", self.man)
         Module.__init__(self)
 
     def list(self, bot, event, args, buf):
@@ -30,7 +28,7 @@ class help(Module):
 
         for module in enumerate(self.bot.modules.modules['command']):
             command = self.bot.modules.modules['command'][module[1]]
-            if command[1] == privlevel:
+            if command.privlevel == privlevel:
                 bot_commands.append(module[1])
 
         return "Available commands: %s" % ", ".join(bot_commands)

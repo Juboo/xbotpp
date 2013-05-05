@@ -11,9 +11,7 @@ class wolframalpha(Module):
     """
 
     def __init__(self):
-        self.bind = [
-            ["command", "calc", self.calc, "common"],
-        ]
+        self.bind_command("calc", self.calc)
         Module.__init__(self)
 
     def load(self):

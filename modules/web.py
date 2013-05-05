@@ -11,10 +11,8 @@ class web(Module):
     """
 
     def __init__(self):
-        self.bind = [
-            ["command", "sprunge", self.sprunge, "common"],
-            ["command", "curl", self.curl, "common"],
-        ]
+        self.bind_command("sprunge", self.sprunge)
+        self.bind_command("curl", self.curl)
         Module.__init__(self)
 
     def sprunge(self, bot, event, args, buf):

@@ -22,8 +22,8 @@ class test_modules(unittest.TestCase):
         assert 'test_no_bind' in loaded, "test_no_bind module not loaded"
         assert 'test_bind' in loaded, "test_bind module not loaded"
 
-        assert self.bot.modules.modules['command']['test_no_bind'][0](self.bot, "", [""], "") == "Test Module", "Test module test_no_bind produced unknown return value"
-        assert self.bot.modules.modules['command']['test_bind'][0](self.bot, "", [""], "") == "Test Module", "Test module test_bind produced unknown return value"
+        assert self.bot.modules.modules['command']['test_no_bind'].func(self.bot, "", [""], "") == "Test Module", "Test module test_no_bind produced unknown return value"
+        assert self.bot.modules.modules['command']['test_bind'].func(self.bot, "", [""], "") == "Test Module", "Test module test_bind produced unknown return value"
 
     def test_modules_unload_returns_false_for_nonexistant_module(self):
         assert self.bot.modules.unload("module_that_does_not_exist") == False, "Unload returned not False for non-existant module"

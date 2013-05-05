@@ -49,7 +49,7 @@ class BotIO:
 
         try:
             for i, elem in enumerate(self.bot.modules.modules['privmsg']):
-                self.bot.modules.modules['privmsg'][elem][0](self.bot, event, event.arguments[0].split(), "")
+                self.bot.modules.modules['privmsg'][elem].func(self.bot, event, event.arguments[0].split(), "")
         except:
             error_message = "Traceback (most recent call last):\n" + '\n'.join(traceback.format_exc().split("\n")[-4:-1])
             self.bot._debug(error_message, event=event)
@@ -64,12 +64,12 @@ class BotIO:
                 command = cmdargs[0]
                 cmdargs = cmdargs[1:]
 
-                if self.bot.modules.modules['command'][command][1] == "admin":
+                if self.bot.modules.modules['command'][command].privlevel == "admin":
                     if event.source.nick.lower() not in self.bot.config.get("bot", "owner").lower():
                         buf = "%s: Not authorized." % command
                         continue
 
-                buf = self.bot.modules.modules['command'][command][0](self.bot, event, cmdargs, buf)
+                buf = self.bot.modules.modules['command'][command].func(self.bot, event, cmdargs, buf)
 
             self.bot._log("%s -> %s" % (event.target, buf), "out")
 

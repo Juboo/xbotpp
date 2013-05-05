@@ -21,10 +21,7 @@ class open_graph(Module):
             return "HEAD"
 
     def __init__(self):
-        self.bind = [
-            ["privmsg", "open_graph", self.scan, "common"],
-        ]
-
+        self.bind_command("open_graph", self.scan, "", "privmsg")
         Module.__init__(self)
 
     def scan(self, bot, event, args, buf):
@@ -67,7 +64,7 @@ class open_graph(Module):
 
             if re.search(module, url):
                 self.bot._debug("Found matching URL module, calling")
-                return self.bot.modules.modules['url'][module][0](self.bot, None, url, "")
+                return self.bot.modules.modules['url'][module].func(self.bot, None, url, "")
 
         # Get the headers of the URL
         self.bot._debug("Sending HEAD request...")

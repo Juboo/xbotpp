@@ -17,10 +17,8 @@ class mishimmie(Module):
         Binds the URL search to `shimmie\.katawa-shoujo\.com` and the search function to `mi`.
         """
 
-        self.bind = [
-            ["command", "mi", self.search, "common"],
-            ["url", "shimmie\.katawa-shoujo\.com", self.ogscan, "common"],
-        ]
+        self.bind_command("mi", self.search)
+        self.bind_command("shimmie\.katawa-shoujo\.com", self.ogscan, "", "url")
         Module.__init__(self)
 
     def search(self, bot, event, args, buf):
