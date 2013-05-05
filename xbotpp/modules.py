@@ -204,7 +204,7 @@ class Modules:
                 mod.bot = self.bot
                 for command in mod.bind:
                     command.parent = {'parent': member[0], 'basename': name}
-                    self.modules[type][command.name] = command
+                    self.modules[command.type][command.name] = command
                 self.actualmodules[member[0]] = (name, mod)
                 mod.load()
                 count += 1
