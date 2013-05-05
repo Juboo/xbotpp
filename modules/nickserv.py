@@ -5,9 +5,7 @@ from xbotpp.modules import Module
 
 class nickserv(Module):
     def __init__(self):
-        self.bind = [
-            ["privmsg", "nickserv", self.action, "common"],
-        ]
+        self.bind_command("nickserv", self.action, "", "privmsg")
         Module.__init__(self)
 
     def load(self):

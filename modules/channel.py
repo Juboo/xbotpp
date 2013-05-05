@@ -9,11 +9,8 @@ class channel(Module):
     """
 
     def __init__(self):
-        self.perms = "admin"
-        self.bind = [
-            ["command", "join", self.join, "admin"],
-            ["command", "part", self.part, "admin"],
-        ]
+        self.bind_command("join", self.join, "admin")
+        self.bind_command("part", self.part, "admin")
         Module.__init__(self)
 
     def join(self, bot, event, args, buf):
@@ -31,7 +28,10 @@ class channel(Module):
 
     def part(self, bot, event, args, buf):
         """\
-        Part from the specified channel, optionally with a message (``args[1:]``)
+        Part from a channel.
+
+        If no channel name specified as first argument, assumes current channel.
+        A message can optionally be included.
         """
 
         if len(args) == 1:
@@ -39,9 +39,19 @@ class channel(Module):
                 self.bot.connection.part(args[0])
             except:
                 pass
-        elif len(args) > 1:
+        elif len(args) > 1 and args[0][0] == "#":
             try:
                 self.bot.connection.part(args[0], args[1:])
+            except:
+                pass
+        elif len(args) > 1 and args[0][0] != "#":
+            try:
+                self.bot.connection.part(event.target, args[0:])
+            except:
+                pass
+        elif len(args) == 0:
+            try:
+                self.bot.connection.part(event.target)
             except:
                 pass
         else:

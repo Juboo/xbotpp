@@ -16,15 +16,16 @@ loaded URL handler would look somewhat like the following::
 
     modules.modules = {
         "command": {
-            "help": (<type 'function'>, "common", "help", "help"),
-            "reload": (<type 'function'>, "admin", "module", "admin"),
+            "help": BoundCommand("help", <type 'function'>, "command", "common", {'parent': 'help', 'basename': 'help'})
+            "reload": BoundCommand("reload", <type 'function'>, "command", "admin", {'parent': 'module', 'basename': 'admin'})
         },
         "url": {
-            "shimmie\.katawa-shoujo\.com": (<type 'function'>, "common", "mishimmie", "mishimmie"),
+            "shimmie\.katawa-shoujo\.com": BoundCommand("shimmie\.katawa-shoujo\.com", <type 'function'>, "url", "common", {'parent': 'mishimmie', 'basename': 'mishimmie'})
         },
         "privmsg: {},
     }
 
+See the :py:class:`xbotpp.modules.BoundCommand` docs for how the BoundCommand object works.
 
 .. _commandtypes:
 
@@ -54,28 +55,6 @@ The name of this type of command is not used by the bot, but should still be
 unique.
 
 
-.. _commandkey:
-
-A command key
-~~~~~~~~~~~~~
-
-Each command is stored as a key under it's module type in the `modules.modules`
-dictionary in this format::
-
-    command_name: (callback, permission_level, parent_class_name, parent_class_module_name)
-
-- ``command_name`` is the name of the command, or the regex to match a URL
-  if the module is a URL module. This is ignored for message handler modules.
-- ``callback`` is the function to run when the function is called.
-- ``permission_level`` is the permission level of the command, which can be
-  either of `common` for normal commands or `admin` for admin-level commands.
-  This is ignored for URL handlers and message handlers.
-- ``parent_class_name`` is the name of the class which the command was loaded
-  from. In most cases, this is the name as ``parent_class_madule_name``.
-- ``parent_class_module_name`` is the name of the module file from which this
-  command was loaded from.
-
-
 .. _actualmodulesdict:
 
 The `modules.actualmodules` dictionary
@@ -85,7 +64,7 @@ The `modules.actualmodules` dictionary contains the raw loaded module classes.
 When a module is loaded, it is stored in this dictionary in the following
 format::
 
-    module_name: (module_object, module_base_name)
+    module_name: (module_base_name, module_object)
 
 - ``module_name`` is the name of the module (usually the name of the module`s
   class, but can be overridden by the module with the `self.name` property in
