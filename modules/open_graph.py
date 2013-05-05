@@ -64,7 +64,7 @@ class open_graph(Module):
 
             if re.search(module, url):
                 self.bot._debug("Found matching URL module, calling")
-                return self.bot.modules.modules['url'][module][0](self.bot, None, url, "")
+                return self.bot.modules.modules['url'][module].func(self.bot, None, url, "")
 
         # Get the headers of the URL
         self.bot._debug("Sending HEAD request...")

@@ -54,7 +54,7 @@ class Module:
         """\
         Bind a command.
         """
-        if not self.bind:
+        if not getattr(self, 'bind', None):
             self.bind = []
             
         self.bind.append(BoundCommand(name, func, privlevel, type, None))
@@ -217,6 +217,7 @@ class Modules:
                 return False
 
         except:
+            raise
             return False
 
     def unload(self, name):
@@ -242,7 +243,7 @@ class Modules:
             del_list = []
             for obj in self.actualmodules:
                 for type in self.modules:
-                    for mod in enumerate(self.modules[type]):
+                    for mod in self.modules[type]:
                         if self.modules[type][mod].parent['parent'] == name:
                             del_list.append((type, mod))
 
