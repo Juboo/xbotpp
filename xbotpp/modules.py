@@ -25,7 +25,7 @@ class BoundCommand(object):
         self.privlevel = privlevel
         self.type = type
 
-        if parent = None:
+        if parent == None:
             self.parent = {"parent": None, "basename": None}
         else:
             self.parent = parent
