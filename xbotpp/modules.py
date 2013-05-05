@@ -54,7 +54,9 @@ class Module:
         """\
         Bind a command.
         """
-
+        if not self.bind:
+            self.bind = []
+            
         self.bind.append(BoundCommand(name, func, privlevel, type, None))
 
     def action(self, bot, event, args, buf):
