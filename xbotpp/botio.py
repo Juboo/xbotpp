@@ -74,7 +74,7 @@ class BotIO:
             self.bot._log("%s -> %s" % (event.target, buf), "out")
 
             if self.bot.config.has_option(self.bot.config.active_network, "no_newlines"):
-                client.privmsg(" ¬ ".join(buf.split("\n")))
+                client.privmsg(event.target, " ¬ ".join(buf.split("\n")))
             else:
                 lines = buf.split("\n")
                 for index, line in enumerate(lines):
