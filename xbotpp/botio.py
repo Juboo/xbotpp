@@ -73,13 +73,16 @@ class BotIO:
 
             self.bot._log("%s -> %s" % (event.target, buf), "out")
 
-            lines = buf.split("\n")
-            for index, line in enumerate(lines):
-                if len(lines) > 5:
-                    __import__("time").sleep(0.2)
+            if bot.config.has_option(bot.config.active_network, "no_newlines"):
+                client.privmsg(" ¬ ".join(buf.split("\n")))
+            else:
+                lines = buf.split("\n")
+                for index, line in enumerate(lines):
+                    if len(lines) > 5:
+                        __import__("time").sleep(0.2)
 
-                if index > 10:
-                    client.privmsg(event.target, "[%d more lines omitted]" % (len(lines) - index))
-                    break
+                    if index > 10:
+                        client.privmsg(event.target, "[%d more lines omitted]" % (len(lines) - index))
+                        break
 
-                client.privmsg(event.target, line)
+                    client.privmsg(event.target, line)
