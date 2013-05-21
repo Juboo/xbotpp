@@ -13,6 +13,7 @@ class text(Module):
     def __init__(self):
         self.bind_command("lolcrypt", self.lolcrypt)
         self.bind_command("tr", self.tr)
+        Module.__init__(self)
     
     def _tr(self, str, inAlphabet='aeioubcdfghjklmnpqrstvwxyz', outAlphabet='iouaenpqrstvwxyzbcdfghjklm'):
         buffer = ""
@@ -30,18 +31,26 @@ class text(Module):
         FIXME: docs
         """
 
-        parser = argparse.ArgumentParser(prog='tr')
-        parser.add_argument('string', type=str, help='string to transform')
-        parser.add_argument('-i', '--input-alphabet', type=str, action="store", dest="a_in", default="abcdefghijklmnopqrstuvwxyz", help='input alphabet (default: "%(default)s")')
-        parser.add_argument('-o', '--output-alphabet', type=str, action="store", dest="a_out", default="nopqrstuvwxyzabcdefghijklm", help='output alphabet (default: "%(default)s")')
+        default_in = "abcdefghijklmnopqrstuvwxyz"
+        default_out = "nopqrstuvwxyzabcdefghijklm"
+
+        h = '<command> | tr [input-alphabet] [output-alphabet]\nDefault input alphabet: "%s"\nDefault output alphabet: "%s"' % (default_in, default_out)
+
+        parser = argparse.ArgumentParser(prog='tr', add_help=False)
+        parser.add_argument('-h', '--help', action='store_true', dest='help')
+        parser.add_argument('a_in', nargs='?', type=str, action="store", default=default_in)
+        parser.add_argument('a_out', nargs='?', type=str, action="store", default=default_out)
 
         try:
             options = parser.parse_args(args)
         except SystemExit:
             # assume that a SystemExit on parse is a 'invalid arguments', so print help
-            return parser.format_usage()
+            return h
 
-        return self._tr(options.string, options.a_in, options.a_out) 
+        if options.help or buf == "":
+            return h
+
+        return self._tr(buf, options.a_in, options.a_out) 
 
     def lolcrypt(self, bot, event, args, buf):
         """\
@@ -62,3 +71,4 @@ class text(Module):
         else:
             # en-lolcrypt
             return self._tr(text, 'aeioubcdfghjklmnpqrstvwxyz', 'iouaenpqrstvwxyzbcdfghjklm')
+
