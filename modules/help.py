@@ -44,9 +44,9 @@ class help(Module):
         for tup in self.bot.modules.actualmodules:
             basename = self.bot.modules.actualmodules[tup][0]
             obj = self.bot.modules.actualmodules[tup][1]
-            for type, name, func, perms in obj.bind:
-                if name == args[0]:
-                    return "http://xbotpp.readthedocs.org/en/latest/modules/%s.html#modules.%s.%s.%s" % (basename, basename, obj.name, func.__name__)
+            for i in obj.bind:
+                if i.name == args[0]:
+                    return "http://xbotpp.readthedocs.org/en/latest/modules/%s.html#modules.%s.%s.%s" % (basename, basename, obj.name, i.func.__name__)
 
         return "Can't get manual page for that command."
 
