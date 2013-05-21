@@ -42,10 +42,11 @@ class Bot(irc.bot.SingleServerIRCBot):
 
         hosts = []
         _hosts = [s.strip() for s in self.config.get(self.config.active_network, "servers").split(',')]
+        serverpass = self.config.get(self.config.active_network, "server_password") if self.config.has_option(self.config.active_network, "server_password") else None
 
         for host in _hosts:
             host = host.split(":")
-            hosts.append((host[0], int(host[1])))
+            hosts.append(irc.bot.ServerSpec(host[0], int(host[1]), serverpass))
 
         nick = self.config.get(self.config.active_network, "nick")
         realname = self.config.get("bot", "owner") if self.config.has_option("bot", "owner") else nick
