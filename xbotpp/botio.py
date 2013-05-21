@@ -1,5 +1,6 @@
 # vim: noai:ts=4:sw=4:expandtab:syntax=python
 
+import shlex
 import traceback
 
 
@@ -60,7 +61,7 @@ class BotIO:
             buf = ""
 
             for command in commands:
-                cmdargs = [s.strip() for s in command.split()]
+                cmdargs = [s.strip() for s in shlex.split(command)]
                 command = cmdargs[0]
                 cmdargs = cmdargs[1:]
 

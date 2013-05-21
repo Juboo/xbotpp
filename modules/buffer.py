@@ -74,7 +74,7 @@ class buffer(Module):
 
             for t in self.bot.modules.modules:
                 if args[0] in self.bot.modules.modules[t]:
-                    func = self.bot.modules.modules[t][args[0]][0]
+                    func = self.bot.modules.modules[t][args[0]].func
 
             if func == "":
                 content = "tee: command not found: %s" % args[0]
@@ -83,7 +83,7 @@ class buffer(Module):
                     name = args[args.index(">")+1]
                     for t in self.bot.modules.modules:
                         if name in self.bot.modules.modules[t]:
-                            pipe = self.bot.modules.modules[t][name][0]
+                            pipe = self.bot.modules.modules[t][name].func
 
 
             if pipe != "":
