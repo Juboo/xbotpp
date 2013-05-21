@@ -18,9 +18,13 @@ class text(Module):
     def _tr(self, str, inAlphabet='aeioubcdfghjklmnpqrstvwxyz', outAlphabet='iouaenpqrstvwxyzbcdfghjklm'):
         buffer = ""
         for value in str:
-            if value in inAlphabet:
-                index = inAlphabet.index(value.lower())
-                c = outAlphabet[index] if (value in outAlphabet) else value
+            if value.lower() in inAlphabet:
+                if value in inAlphabet:
+                    index = inAlphabet.index(value)
+                else:
+                    index = inAlphabet.index(value.lower())
+
+                c = outAlphabet[index] if (value in outAlphabet or value.lower() in outAlphabet) else value
                 buffer += c.upper() if re.search("[A-Z]", value) else c
             else:
                 buffer += value
