@@ -3,6 +3,7 @@
 
 import xbotpp
 import io
+import os
 import re
 import argparse
 from configparser import ConfigParser
@@ -27,6 +28,7 @@ if __name__ == "__main__":
     config.module_path = 'modules'
 
     if config.read(options.config):
+        config.conf_path = os.path.abspath(options.config)
         network = None
 
         if options.network:

@@ -90,6 +90,7 @@ class misc(Module):
 
     def __init__(self):
         self.bind_command("eval", self.eval, "admin")
+        self.bind_command("rehash", self.rehash, "admin")
         Module.__init__(self)
 
     def eval(self, bot, event, args, buf):
@@ -105,4 +106,12 @@ class misc(Module):
                 ret = str(ret, 'utf-8')
             return ret
 
+    def rehash(self, bot, event, args, buf):
+        try:
+            if self.bot.config.read(self.bot.config.conf_path):
+                return "Config rehashed."
+            else:
+                return "Error while rehashing config."
+        except:
+            return "An exception occurred while rehashing the config."
 
