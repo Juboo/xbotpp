@@ -1,6 +1,7 @@
 # vim: noai:ts=4:sw=4:expandtab:syntax=python
 
 import re
+import irc.client
 import lxml.html
 import urllib.parse
 import urllib.request
@@ -43,13 +44,13 @@ class open_graph(Module):
                     continue
 
             try:
-                result = self.do_og(url[0])
+                result = self.do_og(url[0], event)
                 if result:
                     self.bot.connection.privmsg(event.target, result)
             except:
                 raise
 
-    def do_og(self, url):
+    def do_og(self, url, event=None):
         """\
         Checks if the given URL matches a registered URL handler and call the handler if it does,
         otherwise scan the page for Open Graph metadata, falling back to returning the page title
@@ -64,7 +65,7 @@ class open_graph(Module):
 
             if re.search(module, url):
                 self.bot._debug("Found matching URL module, calling")
-                return self.bot.modules.modules['url'][module].func(self.bot, None, url, "")
+                return self.bot.modules.modules['url'][module].func(self.bot, event, url, "")
 
         # Get the headers of the URL
         self.bot._debug("Sending HEAD request...")

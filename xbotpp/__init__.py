@@ -24,7 +24,7 @@ class Bot(irc.bot.SingleServerIRCBot):
         self.config = config
         self.prefix = config.get('bot', 'prefix')
         self.debug = False
-        self.version = "v0.2.10"
+        self.version = "v0.2.12"
         self.modules = modules.Modules(self)
         self.botio = botio.BotIO(self)
 
@@ -42,10 +42,11 @@ class Bot(irc.bot.SingleServerIRCBot):
 
         hosts = []
         _hosts = [s.strip() for s in self.config.get(self.config.active_network, "servers").split(',')]
+        serverpass = self.config.get(self.config.active_network, "server_password") if self.config.has_option(self.config.active_network, "server_password") else None
 
         for host in _hosts:
             host = host.split(":")
-            hosts.append((host[0], int(host[1])))
+            hosts.append(irc.bot.ServerSpec(host[0], int(host[1]), serverpass))
 
         nick = self.config.get(self.config.active_network, "nick")
         realname = self.config.get("bot", "owner") if self.config.has_option("bot", "owner") else nick
