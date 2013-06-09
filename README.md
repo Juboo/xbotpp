@@ -1,34 +1,25 @@
 ```    
   .,::      .::::::::.      ...   ::::::::::::         
   `;;;,  .,;;  ;;;'';;'  .;;;;;;;.;;;;;;;;''''         
-    '[[,,[['   [[[__[[\.,[[     \[[,   [[   [      [   
-     Y$$$P     $$""""Y$$$$$,     $$$   $$ $$$$$  $$$$$ 
-   oP"``"Yo,  _88o,,od8P"888,_ _,88P   88,  8      8   
+    '[[,,[['   [[[__[[\.,[[     \[[,   [[      [      [   
+     Y$$$P     $$""""Y$$$$$,     $$$   $$    $$$$$  $$$$$ 
+   oP"``"Yo,  _88o,,od8P"888,_ _,88P   88,     8      8   
 ,m"       "Mm,""YUMMMP"   "YMMMMMP"    MMM             
 ```
 
-[xbot++](//github.com/aki--aki/xbotpp) - the modularised Python 3 IRC bot. Woot!
+[xbot++](//github.com/aki--aki/xbotpp) - the modularised, multi-protocol, Python 3 chat bot. Woot!
 
 [![Build Status](https://travis-ci.org/aki--aki/xbotpp.png?branch=master)](https://travis-ci.org/aki--aki/xbotpp)
 
-## DEPENDENCIES
-
- - [irc](https://pypi.python.org/pypi/irc)
-
-To install all dependencies (including module dependencies) run:
-
-    $ pip install -r requirements.txt
-    
-    # or just core dependencies
-    $ pip install -r core_dependencies.txt
-
 ## INSTALL
 
-    $ git clone https://github.com/aki--aki/xbotpp.git
-    $ cd xbotpp
-    $ cp xbotpp.sample.conf xbotpp.conf
-    $ vim xbotpp.conf
-    $ ./bot
+    $ pip install xbotpp
+    $ xbotpp-config
+    $ xbotpp
+
+### MIGRATING FROM v0.1.x or v0.2.x
+
+    $ xbotpp-migrate xbotpp.conf
 
 ## DOCUMENTATION
 
