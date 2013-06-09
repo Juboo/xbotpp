@@ -2,3 +2,5 @@
 *.swp
 xbotpp.conf
 *.sublime-*
+*.egg-info
+*.json
