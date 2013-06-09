@@ -6,18 +6,18 @@ import sys
 import json
 
 class event:
-	class generic:
-		pass
+    class generic:
+        pass
 
-	class message(generic):
-		def __init__(self, source, target, message):
-			self.source = source
-			self.target = target
-			self.message = message
+    class message(generic):
+        def __init__(self, source, target, message):
+            self.source = source
+            self.target = target
+            self.message = message
 
 class handlers:
-	def __init__(self):
-		pass
+    def __init__(self):
+        pass
 
-	def on_message(self, event):
-		print(event.text)
+    def on_message(self, event):
+        print(event.text)
