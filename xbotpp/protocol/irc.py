@@ -27,27 +27,36 @@ class irc(irclib_client.SimpleIRCClient):
     '''
 
     def __init__(self, config, state):
+        super(irc, self).__init__()
+
+        debug.write('Initialized IRC protocol library.', debug.levels.Info)
+
         self.network = config['networks'][state['network']]
         self.channels = irclib_dict.IRCDict()
-        self._nickname = network['nick']
+        self._nickname = self.network['nick']
         self._realname = config['bot']['owner']
-        self.handlers = handler.handlers()
+
+        debug.write('Nickname: %s' % self._nickname, debug.levels.Info)
+        debug.write('Realname: %s' % self._realname, debug.levels.Info)
 
         # Get hosts from the config and transform them into ServerSpec objects
         self.hosts = []
         serverpass = self.network['server_password'] if 'server_password' in self.network else None
         for host in [s.strip() for s in self.network['servers'].split(',')]:
             host = host.split(":")
-            self.hosts.append(self.ServerSpec(host[0], int(host[1]), serverpass))
+            self.hosts.append(ServerSpec(host[0], int(host[1]), serverpass))
 
-    def _on_event(self, events):
-        def decorator(f):
-            if isinstance(events, str):
-                events = [events]
-            for event_name in events:
-                self.connection.add_global_handler(event_name, f, 0)
-            return f
-        return decorator
+        # add events
+        _on_events = [
+            'disconnect', 'join', 'kick', 'mode', 'namreply', 
+            'nick', 'part', 'quit', 'nicknameinuse', 'welcome',
+        ]
+
+        for event in _on_events:
+            self.connection.add_global_handler(event, getattr(self, '_on_' + event, None), 0)
+
+        for event in ['privmsg', 'pubmsg', 'notice']:
+            self.connection.add_global_handler(event, self.generic_message, 0)
 
     def _connect(self):
         server = self.hosts[0]
@@ -57,12 +66,10 @@ class irc(irclib_client.SimpleIRCClient):
         except irclib_client.ServerConnectionError:
             debug.write('Error connecting to %s' % server, debug.levels.Info)
 
-    @_on_event('disconnect')
     def _on_disconnect(self, client, event):
         debug.write('Disconnected.', debug.levels.Info)
-        self.channels = IRCDict()
+        self.channels = irclib_dict.IRCDict()
 
-    @_on_event('join')
     def _on_join(self, client, event):
         channel = event.target
         nick = event.source.nick
@@ -71,8 +78,8 @@ class irc(irclib_client.SimpleIRCClient):
             self.channels[channel] = irclib_bot.Channel()
 
         self.channels[channel].add_user(nick)
+        handler.handlers.on_user_join(handler.event.user_join(nick))
 
-    @_on_event('kick')
     def _on_kick(self, client, event):
         nick = event.arguments[0]
         channel = event.target
@@ -82,11 +89,10 @@ class irc(irclib_client.SimpleIRCClient):
         else:
             self.channels[channel].remove_user(nick)
 
-    @_on_event('mode')
     def _on_mode(self, client, event):
         modes = irclib_modes.parse_channel_modes(" ".join(event.arguments))
         target = event.target
-        if irc.client.is_channel(target):
+        if irclib_client.is_channel(target):
             channel = self.channels[target]
             for mode in modes:
                 if mode[0] == "+":
@@ -97,7 +103,6 @@ class irc(irclib_client.SimpleIRCClient):
         else:
             pass
 
-    @_on_event('namreply')
     def _on_namreply(self, client, event):
         channel = event.arguments[1]
         for nick in event.arguments[2].split():
@@ -112,15 +117,14 @@ class irc(irclib_client.SimpleIRCClient):
 
             self.channels[channel].add_user(nick)
 
-    @_on_event('nick')
     def _on_nick(self, client, event):
         before = event.source.nick
         after = event.target
         for channel in self.channels.values():
             if channel.has_user(before):
                 channel.change_nick(before, after)
+        handler.handlers.on_user_change_nick(handler.event.user_change_nick(before, after))
 
-    @_on_event('part')
     def _on_part(self, client, event):
         nick = event.source.nick
         channel = event.target
@@ -129,37 +133,35 @@ class irc(irclib_client.SimpleIRCClient):
             del self.channels[channel]
         else:
             self.channels[channel].remove_user(nick)
+            handler.handlers.on_user_part(handler.event.user_part(nick))
 
-    @_on_event('quit')
     def _on_quit(self, client, event):
         nick = event.source.nick
         for channel in self.channels.values():
             if channel.has_user(nick):
                 channel.remove_user(nick)
+        handler.handlers.on_user_part(handler.event.user_part(nick))
 
-    @_on_event('nicknameinuse')
     def _on_nicknameinuse(self, client, event):
         client.nick(client.get_nickname() + "_")
 
-    @_on_event('welcome')
     def _on_welcome(self, client, event):
         for channel in [s.strip() for s in self.network['channels'].split(",")]:
             client.join(channel)
 
-    @_on_event(['pubmsg', 'privmsg', 'notice'])
     def generic_message(self, client, event):
         '''\
         Generic IRC message handler.
         '''
 
         h = handler.event.message(event.source.nick, event.target, event.arguments[0])
-        self.handlers.on_message(h)
+        handler.handlers.on_message(h)
 
     def disconnect(self, message="See ya~"):
-        self.connection.disconnect(msg)
+        self.connection.disconnect(message)
 
     def get_version(self):
-        return 'xbotpp %s' % xbotpp.__version__
+        return 'xbot++ %s' % xbotpp.__version__
 
     def start(self):
         '''\
