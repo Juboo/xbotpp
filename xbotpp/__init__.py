@@ -80,8 +80,10 @@ def init(options):
         raise SystemExit(2)
 
     p = config['networks'][state['network']]['protocol']
-    print(dir(protocol))
     if p in dir(protocol):
         state['connection'] = eval('protocol.%s.%s' % (p, p))(config, state)
+    else:
+        debug.write('''Protocol handler for network not found (network protocol: '%s')''' % p, debug.levels.Error)
+        raise SystemExit(2)
 
-    print(repr(state))
+    state['connection'].start()
