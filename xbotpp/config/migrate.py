@@ -74,7 +74,7 @@ def main(options=None):
     sys.stderr.write("Writing new config... ")
 
     try:
-        if options.new_config == '-':
+        if options.file == '-':
             fh = sys.stdout
         else:
             fh = open(options.file, 'w+')
