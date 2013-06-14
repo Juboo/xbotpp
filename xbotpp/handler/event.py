@@ -4,10 +4,11 @@ class generic:
     pass
 
 class message(generic):
-    def __init__(self, source, target, message):
+    def __init__(self, source, target, message, etype):
         self.source = source
         self.target = target
         self.message = message
+        self.type = etype
 
 class user_join(generic):
     def __init__(self, user):

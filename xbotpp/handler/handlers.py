@@ -10,6 +10,16 @@ dispatch = {
     'user_change_nick': [],
 }
 
+class EventNotFound(Exception):
+    pass
+
+def bind_event(event, handler):
+    global dispatch
+    if event in dispatch:
+        dispatch[event].append(handler)
+    else:
+        raise EventNotFound()
+
 def on_message(revent):
     for function in dispatch['message']:
         function(revent)
