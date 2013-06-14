@@ -3,9 +3,10 @@ python:
     - "3.2"
     - "3.3"
 install:
-    - "pip install ."
+    - "pip install nose irc --use-mirrors"
+    - "pip install . --use-mirrors"
 script:
-    - "nosetests -vw tests/xbotpp/"
+    - "python setup.py nosetests"
 notifications:
     email: false
     irc:
