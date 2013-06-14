@@ -26,15 +26,16 @@ class irc(irclib_client.SimpleIRCClient):
     Our IRC client class.
     '''
 
-    def __init__(self, config, state):
+    def __init__(self, io):
         super(irc, self).__init__()
 
         debug.write('Initialized IRC protocol library.', debug.levels.Info)
 
-        self.network = config['networks'][state['network']]
+        self.io = io
+        self.network = io.config['networks'][io.state['network']]
         self.channels = irclib_dict.IRCDict()
         self._nickname = self.network['nick']
-        self._realname = config['bot']['owner']
+        self._realname = io.config['bot']['owner']
 
         debug.write('Nickname: %s' % self._nickname, debug.levels.Info)
         debug.write('Realname: %s' % self._realname, debug.levels.Info)
@@ -42,7 +43,7 @@ class irc(irclib_client.SimpleIRCClient):
         # Get hosts from the config and transform them into ServerSpec objects
         self.hosts = []
         serverpass = self.network['server_password'] if 'server_password' in self.network else None
-        for host in [s.strip() for s in self.network['servers'].split(',')]:
+        for host in [s.strip() for s in self.network['servers']]:
             host = host.split(":")
             self.hosts.append(ServerSpec(host[0], int(host[1]), serverpass))
 
@@ -53,10 +54,10 @@ class irc(irclib_client.SimpleIRCClient):
         ]
 
         for event in _on_events:
-            self.connection.add_global_handler(event, getattr(self, '_on_' + event, None), 0)
+            self.connection.add_global_handler(event, getattr(self, '_on_' + event, None), -20)
 
         for event in ['privmsg', 'pubmsg', 'notice']:
-            self.connection.add_global_handler(event, self.generic_message, 0)
+            self.connection.add_global_handler(event, self.generic_message, -20)
 
     def _connect(self):
         server = self.hosts[0]
@@ -143,10 +144,12 @@ class irc(irclib_client.SimpleIRCClient):
         handler.handlers.on_user_part(handler.event.user_part(nick))
 
     def _on_nicknameinuse(self, client, event):
+        debug.write('Nickname in use, appending an underscore.', debug.levels.Info)
         client.nick(client.get_nickname() + "_")
 
     def _on_welcome(self, client, event):
-        for channel in [s.strip() for s in self.network['channels'].split(",")]:
+        debug.write('Connected, joining channels.', debug.levels.Info)
+        for channel in [s.strip() for s in self.network['channels']]:
             client.join(channel)
 
     def generic_message(self, client, event):
@@ -154,10 +157,11 @@ class irc(irclib_client.SimpleIRCClient):
         Generic IRC message handler.
         '''
 
-        h = handler.event.message(event.source.nick, event.target, event.arguments[0])
+        h = handler.event.message(event.source.nick, event.target, event.arguments[0], event.type)
         handler.handlers.on_message(h)
 
     def disconnect(self, message="See ya~"):
+        debug.write('Disconnecting: %s' % message, debug.levels.Info)
         self.connection.disconnect(message)
 
     def get_version(self):

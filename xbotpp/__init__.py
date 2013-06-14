@@ -10,11 +10,12 @@ from xbotpp import debug
 from xbotpp import handler
 from xbotpp import modules
 from xbotpp import protocol
+from xbotpp.ptr import ptr
 
 
 __version__ = 'v0.3.0'
-config = {}
-state = {}
+config = ptr()
+state = ptr()
 
 def parse_args(args=None):
     '''Parse the arguments to the bot.'''
@@ -48,7 +49,7 @@ def init(options):
     if os.path.exists(options.config):
         try:
             global config
-            config = json.load(open(options.config, 'r'))
+            config.obj_set(json.load(open(options.config, 'r')))
 
             if not 'networks' in config:
                 debug.write('No \'networks\' section in config.', debug.levels.Error)
@@ -71,7 +72,6 @@ def init(options):
         raise SystemExit(1)
 
     # Select network
-    global state
     if options.network in config['networks']:
         state['network'] = options.network
         debug.write("Network: %s" % state['network'], debug.levels.Info)
@@ -79,9 +79,19 @@ def init(options):
         debug.write('Unknown network.', debug.levels.Error)
         raise SystemExit(2)
 
+    # Set up module monitor
+    state['modules_monitor'] = modules.monitor(config, state)
+
+    # Set up command IO crap
+    state['io'] = handler.botio.botio(config, state)
+
+    # Load our modules
+    state['modules_monitor'].load_init()
+
+    # Set up our protocol library
     p = config['networks'][state['network']]['protocol']
     if p in dir(protocol):
-        state['connection'] = eval('protocol.%s.%s' % (p, p))(config, state)
+        state['connection'] = eval('protocol.%s.%s' % (p, p))(state['io'])
     else:
         debug.write('''Protocol handler for network not found (network protocol: '%s')''' % p, debug.levels.Error)
         raise SystemExit(2)

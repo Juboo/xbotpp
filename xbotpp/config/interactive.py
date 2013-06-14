@@ -34,7 +34,10 @@ def main(options=None):
     newconf = {
         'bot': {},
         'networks': {},
-        'modules': {},
+        'modules': {
+            'load': [],
+            'paths': [],
+        },
     }
 
     ### newconf['bot'] ###
@@ -81,26 +84,22 @@ def main(options=None):
             if newconf['networks'][networkname]['nick'] == '':
                 newconf['networks'][networkname]['nick'] = False
 
+        newconf['networks'][networkname]['hosts'] = []
         hosts_done = False
         while hosts_done == False:
             host = input('Server to connect to (use format host:port): ')
             if host != '':
-                if 'hosts' in newconf['networks'][networkname]:
-                    newconf['networks'][networkname]['hosts'] = ",".join([newconf['networks'][networkname]['hosts'], host])
-                else:
-                    newconf['networks'][networkname]['hosts'] = host
+                newconf['networks'][networkname]['hosts'].append(host)
 
                 if input('Add another server [y/N]? ').lower() != 'y':
                     hosts_done = True
 
+        newconf['networks'][networkname]['channels'] = []
         channels_done = False
         while channels_done == False:
             channel = input('Channel to join to on connect: ')
             if channel != '':
-                if 'channels' in newconf['networks'][networkname]:
-                    newconf['networks'][networkname]['channels'] = ",".join([newconf['networks'][networkname]['channels'], host])
-                else:
-                    newconf['networks'][networkname]['channels'] = host
+                newconf['networks'][networkname]['channels'].append(host)
 
                 if input('Add another channel [y/N]? ').lower() != 'y':
                     channels_done = True
@@ -108,7 +107,49 @@ def main(options=None):
         if input('Add another network [y/N]? ').lower() != 'y':
             networks_done = True
 
-    json.dump(newconf, sys.stdout, indent=4, separators=(',', ': '), sort_keys=True)
+    line('''
+    *** Module config ***
+    ''')
+
+    paths_done = False
+
+    line('''
+    Now we'll have to add paths to search for modules.
+    You may want to add a path in the current directory, as well as the system module path.
+    ''')
+
+    while paths_done == False:
+        path = input('Path to search for modules: ')
+        if path != '':
+            newconf['modules']['paths'].append(path)
+
+            if input('Add another path [y/N]? ').lower() != 'y':
+                paths_done = True
+
+    modules_done = False
+    while modules_done == False:
+        module = input('Name of module to load on startup: ')
+        if module != '':
+            newconf['modules']['load'].append(module)
+
+            if input('Add another module [y/N]? ').lower() != 'y':
+                modules_done = True
+
+    line('''
+    *** Configuration complete ***
+    ''')
+
+    if input('Write config to %s [Y/n]? ' % ('file \'{0}\''.format(options.file) if options.file != '-' else 'stdout')).lower() == 'y':
+        if options.file == '-':
+            fh = sys.stdout
+        else:
+            fh = open(options.file, 'w+')
+
+        json.dump(newconf, fh, indent=4, separators=(',', ': '), sort_keys=True)
+        raise SystemExit(0)
+
+    print('Exiting without saving config.')
+
 
 if __name__ == '__main__':
     main()

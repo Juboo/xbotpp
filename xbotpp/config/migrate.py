@@ -23,8 +23,12 @@ def main(options=None):
 
     oldconf = ConfigParser()
     newconf = {
+        'bot': {},
         'networks': {},
-        'modules': {},
+        'modules': {
+            'load': [],
+            'paths': [],
+        },
     }
 
     sys.stderr.write("Reading old configuration... ")
@@ -41,9 +45,13 @@ def main(options=None):
             y = re.sub('network: ', '', s)
             newconf['networks'][y] = {'protocol': 'irc'}
             for key in oldconf[s]:
-                newconf['networks'][y][key] = oldconf[s][key]
+                if key == 'channels' or key == 'hosts':
+                    newconf['networks'][y][key] = oldconf[s][key].split(',')
+                else:
+                    newconf['networks'][y][key] = oldconf[s][key]
         elif s.startswith('module: '):
             y = re.sub('module: ', '', s)
+            newconf['modules']['load'].append(y)
             newconf['modules'][y] = {}
             for key in oldconf[s]:
                 newconf['modules'][y][key] = oldconf[s][key]
@@ -51,6 +59,17 @@ def main(options=None):
             newconf[s] = {}
             for key in oldconf[s]:
                 newconf[s][key] = oldconf[s][key]
+
+    sys.stderr.write("Adding module paths... ")
+
+    try:
+        newconf['modules']['paths'] = ['./modules']
+        print("done.", file=sys.stderr)
+
+    except Exception as e:
+        print("failed :(", file=sys.stderr)
+        print(e, file=sys.stderr)
+        raise SystemExit(2)
 
     sys.stderr.write("Writing new config... ")
 
@@ -66,7 +85,7 @@ def main(options=None):
     except Exception as e:
         print("failed :(", file=sys.stderr)
         print(e, file=sys.stderr)
-        raise SystemExit(2)
+        raise SystemExit(3)
 
 if __name__ == "__main__":
     main()
