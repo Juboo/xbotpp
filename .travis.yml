@@ -3,12 +3,12 @@ python:
     - "3.2"
     - "3.3"
 install:
-    - "pip install -r core_requirements.txt --use-mirrors"
+    - "pip install ."
 script:
-    - "nosetests"
+    - "nosetests -vw tests/xbotpp/"
 notifications:
     email: false
     irc:
         channels:
             - "irc.freenode.net#xbotpp"
-
+            - "irc.dongcorp.org#xbotpp"
