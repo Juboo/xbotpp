@@ -1,0 +1,6 @@
+Core
+====
+
+.. automodule:: xbotpp
+   :members:
+

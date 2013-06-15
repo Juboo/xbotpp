@@ -1,5 +1,13 @@
 Internal modules
 ================
 
-.. autoclass: xbotpp
-   :members:
+.. toctree::
+   :maxdepth: 2
+
+   core
+   debug
+   modules
+   ptr
+   handler
+   config
+

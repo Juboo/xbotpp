@@ -10,14 +10,31 @@ import readline
 '''Interactive utility to create an xbot++ config.'''
 
 def parse_args(args=None):
+    '''\
+    Parse the command-line arguments for :py:func:`xbotpp.config.interactive.main`.
+    '''
+
     parser = argparse.ArgumentParser(description='Interactive utility to create an xbot++ config.')
     parser.add_argument('-f', '--file', metavar='OUTPUT', help='file to write config to, default config.json', default='config.json')
     return parser.parse_args(args)
 
 def line(text):
+    '''\
+       >>> print('\\n'.join[s.strip() for s in text.split('\\n')]))
+
+    '''
+
     print('\n'.join([s.strip() for s in text.split('\n')]))
 
 def main(options=None):
+    '''\
+    Start the interactive configuration utility.
+    
+    `options` is a object with the attribute `file`, containing the name
+    of the file to write to (or ``-`` for stdout). This can be created by
+    the :py:func:`xbotpp.config.interactive.parse_args` function.
+    '''
+
     options = options or parse_args()
 
     line('''\

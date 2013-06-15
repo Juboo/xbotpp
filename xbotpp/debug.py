@@ -9,19 +9,47 @@ import collections
 print_flagged = False
 '''Whether or not to print lines with 'flagged' DebugLevels.'''
 
+class DebugLevel(object):
+    '''\
+    A debug information level.
+
+    :param str name: The name of this debug level.
+    :param str prefix: The prefix to print before the debug information.
+    :param bool flagged: Whether er not the information in this level should\
+    be hidden by default (ie. only shown when :py:data:`xbotpp.debug.print_flagged`\
+    is True)
+    '''
+
+    def __init__(self, name, prefix, flagged):
+        self.name = name
+        '''The name of this debug level.'''
+     
+        self.prefix = prefix
+        '''The prefix to print before the debug information.'''
+
+        self.flagged = flagged
+        '''\
+        Whether or not the information in this level should be hidden by default
+        (ie. only shown when :py:data:`xbotpp.debug.print_flagged` is True)
+        '''
+
+    def __repr__(self):
+        s = '''DebugLevel(name='{name}', prefix='{prefix}', flagged={flagged})'''
+        f = {'name': self.name, 'prefix': self.prefix, 'flagged': self.flagged}
+        return s.format(**f)
+
 class levels:
     '''Debug levels for write().'''
 
-    DebugLevel = collections.namedtuple('DebugLevel', ['prefix', 'flagged'])
-    Error = DebugLevel(prefix='EE', flagged=False) 
-    Warn = DebugLevel(prefix='!!', flagged=False)
-    Info = DebugLevel(prefix='II', flagged=False)
-    Debug = DebugLevel(prefix='DD', flagged=True)
+    Error = DebugLevel('Error', prefix='EE', flagged=False) 
+    Warn = DebugLevel('Warn', prefix='!!', flagged=False)
+    Info = DebugLevel('Info', prefix='II', flagged=False)
+    Debug = DebugLevel('Debug', prefix='DD', flagged=True)
 
 def write(message, level=levels.Debug):
     '''Write a debug message to stderr, with the given DebugLevel.'''
 
-    if not isinstance(level, levels.DebugLevel):
+    if not isinstance(level, DebugLevel):
         write('''debug.write() got level of %s, expected <class 'debug.DebugLevel'>''' % type(level), levels.Error)
         return
 
