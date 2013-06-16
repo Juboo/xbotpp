@@ -2,7 +2,11 @@
 
 
 class ptr:
-    '''Kind of like a pointer to a dictionary.'''
+    '''\
+    A class that is a dictionary.
+    But because it's a class, an instance of it can be shared.
+    Or something.
+    '''
 
     def __init__(self):
         self.obj = {}
