@@ -1,12 +1,12 @@
 # vim: noai:ts=4:sw=4:expandtab:syntax=python
 
-import xbotpp
+import pkg_resources
 from setuptools import setup
 
 
 setup(
     name='xbotpp',
-    version=xbotpp.__version__,
+    version=pkg_resources.get_distribution('xbotpp').version,
     description='A multi-protocol chat bot.',
     author='aki--aki',
     author_email='aki@aki.pw',
