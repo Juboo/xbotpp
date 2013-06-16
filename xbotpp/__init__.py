@@ -6,10 +6,6 @@ import sys
 import json
 import inspect
 import argparse
-from xbotpp import debug
-from xbotpp import handler
-from xbotpp import modules
-from xbotpp import protocol
 from xbotpp.ptr import ptr
 
 
@@ -45,6 +41,11 @@ def init(options):
     '''Initialize the bot and load our configuration.'''
 
     debug.write('Entered init().')
+
+    from xbotpp import debug
+    from xbotpp import handler
+    from xbotpp import modules
+    from xbotpp import protocol
 
     if os.path.exists(options.config):
         try:
