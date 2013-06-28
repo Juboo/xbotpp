@@ -9,6 +9,9 @@ import collections
 print_flagged = False
 '''Whether or not to print lines with 'flagged' DebugLevels.'''
 
+silence = False
+'''A 'shut the hell up' flag.'''
+
 class DebugLevel(object):
     '''\
     A debug information level.
@@ -49,6 +52,9 @@ class levels:
 def write(message, level=levels.Debug):
     '''Write a debug message to stderr, with the given DebugLevel.'''
 
+    if silence:
+        return
+
     if not isinstance(level, DebugLevel):
         write('''debug.write() got level of %s, expected <class 'debug.DebugLevel'>''' % type(level), levels.Error)
         return
@@ -88,3 +94,11 @@ def exception(message, exception, level=levels.Error):
 
     text = text.format(message, exception.__class__.__name__, exception)
     write(text, level)
+
+def permanent_silence():
+    '''\
+    Stop debug routines from printing ANYTHING.
+    '''
+
+    global silence
+    silence = True
