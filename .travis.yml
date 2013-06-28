@@ -11,5 +11,4 @@ notifications:
     email: false
     irc:
         channels:
-            - "irc.freenode.net#xbotpp"
             - "irc.dongcorp.org#xbotpp"
