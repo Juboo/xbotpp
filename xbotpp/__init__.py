@@ -83,16 +83,13 @@ def init(options):
     # Set up module monitor
     state['modules_monitor'] = modules.monitor(config, state)
 
-    # Set up command IO crap
-    state['io'] = handler.botio.botio(config, state)
-
     # Load our modules
     state['modules_monitor'].load_init()
 
     # Set up our protocol library
     p = config['networks'][state['network']]['protocol']
     if p in dir(protocol):
-        state['connection'] = eval('protocol.%s.%s' % (p, p))(state['io'])
+        state['connection'] = eval('protocol.%s.%s' % (p, p))(config, state))
     else:
         debug.write('''Protocol handler for network not found (network protocol: '%s')''' % p, debug.levels.Error)
         raise SystemExit(2)
