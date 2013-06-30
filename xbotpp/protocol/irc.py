@@ -26,17 +26,15 @@ class irc(irclib_client.SimpleIRCClient):
     Our IRC client class.
     '''
 
-    def __init__(self, config, state):
+    def __init__(self):
         super(irc, self).__init__()
 
         debug.write('Initialized IRC protocol library.', debug.levels.Info)
 
-        self.config = config
-        self.state = state
-        self.network = self.config['networks'][self.state['network']]
+        self.network = xbotpp.config['networks'][xbotpp.state['network']]
         self.channels = irclib_dict.IRCDict()
         self._nickname = self.network['nick']
-        self._realname = self.config['bot']['owner']
+        self._realname = xbotpp.config['bot']['owner']
 
         debug.write('Nickname: %s' % self._nickname, debug.levels.Info)
         debug.write('Realname: %s' % self._realname, debug.levels.Info)
