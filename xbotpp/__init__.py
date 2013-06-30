@@ -44,7 +44,8 @@ def init(options):
     from xbotpp import handler
     from xbotpp import modules
     from xbotpp import protocol
-    
+    from xbotpp import util
+
     debug.write('Entered init().')
 
     if os.path.exists(options.config):
@@ -81,15 +82,13 @@ def init(options):
         raise SystemExit(2)
 
     # Set up module monitor
-    state['modules_monitor'] = modules.monitor(config, state)
-
-    # Load our modules
+    state['modules_monitor'] = modules.monitor()
     state['modules_monitor'].load_init()
 
     # Set up our protocol library
     p = config['networks'][state['network']]['protocol']
     if p in dir(protocol):
-        state['connection'] = eval('protocol.%s.%s' % (p, p))(config, state)
+        state['connection'] = eval('protocol.%s.%s' % (p, p))()
     else:
         debug.write('''Protocol handler for network not found (network protocol: '%s')''' % p, debug.levels.Error)
         raise SystemExit(2)
