@@ -86,6 +86,10 @@ class monitor:
                 'events': {},
             }
 
+    def on_message(self, event):
+        # for the command handler ;)
+        pass
+
     def unload(self, name):
         if name not in self.loaded:
             raise error.ModuleNotLoaded(name)
