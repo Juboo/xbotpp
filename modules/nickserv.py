@@ -14,7 +14,7 @@ class nickserv(Module):
 
     def action(self, bot, event, args, buf):
         """\
-        Automatically authonticate with NickServ when an authentication request is received.
+        Automatically authenticate with NickServ when an authentication request is received.
         """
 
         if self.bot.config.has_option(self.bot.config.active_network, "nickserv_password"):
