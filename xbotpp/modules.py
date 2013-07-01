@@ -5,6 +5,7 @@ import re
 import sys
 import imp
 import json
+import shlex
 import inspect
 import importlib
 
@@ -51,12 +52,41 @@ class error:
 class monitor:
     def __init__(self):
         self.paths = xbotpp.config['modules']['paths']
+
+        # self.loaded = {
+        #     'module_name': {
+        #         'module': <module ...>,
+        #         'events': {
+        #             'sid': <function ...>,
+        #             'sid': <function ...>
+        #         }
+        #     }
+        # }
+
         self.loaded = {}
+
+        # self.commands = {
+        #     'command_name': {
+        #         'function': <function ...>,
+        #         'privlevel': 0,
+        #         'module': 'module_name'
+        #     }
+        # }
+
+        self.commands = {}
 
         for path in self.paths:
             sys.path.insert(0, path)
 
         handler.handlers.bind_event('message', self.on_message)
+
+    def bind_command(self, command, privlevel, function):
+        self.commands[command] = {
+            'function': function,
+            'privlevel': privlevel,
+            'module': inspect.getmodule(function).__xbotpp_module__
+        }
+
 
     def load_init(self):
         for module in xbotpp.config['modules']['load']:
@@ -87,8 +117,46 @@ class monitor:
             }
 
     def on_message(self, event):
-        # for the command handler ;)
-        pass
+        '''\
+        Gets message events, does the command logic with them.
+        '''
+
+        if event.message.startswith(xbotpp.config['bot']['prefix']):            
+            message_information = {
+                'source': event.source,
+                'target': event.source if event.type == 'privmsg' else event.target
+            }
+
+            debug.write("message_information: {}".format(repr(message_information)))
+
+            commands = []
+            temp = []
+            
+            debug.write('starting split')
+            for i in shlex.split(event.message[1:]):
+                debug.write('shlex: {}'.format(i))
+                if i != "|":
+                    debug.write('appending to temp')
+                    temp.append(i)
+                else:
+                    debug.write('temp onto commands')
+                    commands.append(temp)
+                    temp = []
+
+            debug.write('split ended')
+            commands.append(temp)
+            del temp
+
+            buf = ""
+
+            for br in commands:
+                debug.write('command: {}'.format(br[0]))
+                if br[0] in self.commands:
+                    debug.write('calling {}'.format(br[0]))
+                    buf = self.commands[br[0]]['function'](message_information, br[1:], buf)
+                    debug.write('buf: {}'.format(buf))
+            
+            xbotpp.state['connection'].send_message(message_information['target'], buf)
 
     def unload(self, name):
         if name not in self.loaded:

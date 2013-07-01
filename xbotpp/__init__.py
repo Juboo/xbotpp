@@ -7,7 +7,8 @@ import json
 import inspect
 import argparse
 from xbotpp.ptr import ptr
-
+from xbotpp import debug
+from xbotpp import util
 
 __version__ = 'v0.3.0'
 config = ptr()
@@ -40,11 +41,9 @@ def set_debug(e=True):
 def init(options):
     '''Initialize the bot and load our configuration.'''
 
-    from xbotpp import debug
     from xbotpp import handler
     from xbotpp import modules
     from xbotpp import protocol
-    from xbotpp import util
 
     debug.write('Entered init().')
 

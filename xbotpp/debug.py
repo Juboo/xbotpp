@@ -2,6 +2,7 @@
 
 import sys
 import collections
+from datetime import datetime
 
 
 '''Various debugging information functions.'''
@@ -62,11 +63,14 @@ def write(message, level=levels.Debug):
     if level.flagged and not print_flagged:
         return
 
+    time = str(datetime.time(datetime.now()))
+    realpad = "[{0}] [{1}]".format(time, level.prefix)
+
     for index, line in enumerate(message.split('\n')):
         if index is 0:
-            pad = '[' + level.prefix + ']'
+            pad = realpad
         else:
-            pad = ' ' * (len(level.prefix) + 2)
+            pad = ' ' * (len(realpad))
         print("%s %s" % (pad, line.strip()), file=sys.stderr)
 
 def exception(message, exception, level=levels.Error):

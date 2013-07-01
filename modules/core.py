@@ -1,0 +1,42 @@
+# vim: noai:ts=4:sw=4:expandtab:syntax=python
+__xbotpp_module__ = "core"
+
+import sys
+import xbotpp.modules
+
+
+@xbotpp.modules.on_command('info')
+def info(info, args, buf):
+    '''\
+    Return information on the bot.
+    '''
+    
+    infostr = " ".join([s.strip() for s in '''\
+    I'm {nick}, running xbot++ {version} on Python {pyver}, 
+    with {num_modules} module{module_plural} and {num_event_handlers} event handler{event_plural} registered.
+    '''.split('\n')])
+
+    # Count event handlers
+    ev = 0
+    for b in xbotpp.handler.handlers.dispatch:
+        ev += len(xbotpp.handler.handlers.dispatch[b])
+
+    formatters = {
+        'nick': xbotpp.state['connection'].get_nickname(),
+        'version': xbotpp.__version__,
+        'num_modules': len(xbotpp.state['modules_monitor'].loaded),
+        'module_plural': '' if len(xbotpp.state['modules_monitor'].loaded) is 1 else 's',
+        'num_event_handlers': ev,
+        'event_plural': '' if ev is 1 else 's',
+        'pyver': ".".join([str(s) for s in sys.version_info[0:3]]),
+    }
+
+    return infostr.format(**formatters)
+
+@xbotpp.modules.on_command('list')
+def command_list(info, args, buf):
+    '''\
+    Return a list of commands.
+    '''
+
+    return "Available commands: {}".format(", ".join([s for s in xbotpp.state['modules_monitor'].commands]))
