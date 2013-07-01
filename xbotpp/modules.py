@@ -37,15 +37,43 @@ def on_event(event):
     '''
 
     def constructor(r):
-        sid = util.random_string()
-        setattr(r, '__xbotpp_event__', event)
-        setattr(r, '__xbotpp_sid__', sid)
-        handler.handlers.bind_event(event, r)
+        # get this event handler's parent module
         parent = inspect.getmodule(r).__xbotpp_module__
+
+        # check if we're running on an already-SID'd object
+        if getattr(r, '__xbotpp_event__', None) != None:
+            # we've already been run on this object, so die
+            debug.write("on_event: Already been called on SID {}".format(getattr(r, '__xbotpp_event__', None)))
+            return r
+
+        # compare __name__ against parent module's existing event handlers
+        # going on the assumption the module won't have two identically
+        # named event handlers - which is a sane assumption to make...
+        if parent in xbotpp.state['modules_monitor'].loaded:
+            for function in xbotpp.state['modules_monitor'].loaded[parent]['events']:
+                if xbotpp.state['modules_monitor'].loaded[parent]['events'][function][0] == getattr(r, '__name__', None):
+                    # we're the same, so bail
+                    sa = "on_event: Already been called on handler with name {0} from module {1}."
+                    debug.write(sa.format(getattr(r, '__name__', None), parent))
+                    return r
+
+        # assign event attribute
+        setattr(r, '__xbotpp_event__', event)
+
+        # and the SID
+        sid = util.random_string()
+        setattr(r, '__xbotpp_sid__', sid)
+
+        # give it to the handler dispatch list
+        handler.handlers.bind_event(event, r)
+
+        # and put it in it's parent module table
         if parent not in xbotpp.state['modules_monitor'].loaded:
             xbotpp.state['modules_monitor'].create_table(parent)
-        xbotpp.state['modules_monitor'].loaded[parent]['events'][sid] = r
+        xbotpp.state['modules_monitor'].loaded[parent]['events'][sid] = (getattr(r, '__name__', None), r)
+
         return r
+
     return constructor
 
 def on_command(command, privlevel=0):
@@ -125,8 +153,8 @@ class monitor:
         #:        'module_name': {
         #:            'module': <module ...>,
         #:            'events': {
-        #:                'sid': <function ...>,
-        #:                'sid': <function ...>,
+        #:                'sid': ('function_name', <function ...>),
+        #:                'sid': ('function_name', <function ...>),
         #:                ...
         #:            }
         #:        },
@@ -188,11 +216,19 @@ class monitor:
         '''
 
         try:
+            # handle reloads right
+            if name in self.loaded:
+                if 'reload' in self.loaded[name]:
+                    self.create_table(name)
+
             module = importlib.import_module(name)
             imp.reload(module)
 
             if module.__xbotpp_module__:
-                self.create_table(module.__xbotpp_module__)
+                if module.__xbotpp_module__ not in self.loaded:
+                    # if this module binds events, this will be done already
+                    self.create_table(module.__xbotpp_module__)
+
                 self.loaded[module.__xbotpp_module__]['module'] = module
                 return True
             else:
@@ -203,11 +239,10 @@ class monitor:
             raise error.ModuleLoadingException(e)
 
     def create_table(self, modulename):
-        if modulename not in self.loaded:
-            self.loaded[modulename] = {
-                'module': None,
-                'events': {},
-            }
+        self.loaded[modulename] = {
+            'module': None,
+            'events': {},
+        }
 
     def on_message(self, event):
         '''\
@@ -251,14 +286,17 @@ class monitor:
                             buf = "{}: Not authorized.".format(br[0])
                             debug.write(buf)
                             break
-
-                    buf = self.commands[br[0]]['function'](message_information, br[1:], buf)
+                    try:
+                        buf = self.commands[br[0]]['function'](message_information, br[1:], buf)
+                    except Exception as e:
+                        buf = "Exception in {0}: {1}".format(br[0], e)
                     debug.write('buf: {}'.format(buf))
                 else:
                     debug.write('command {} not found'.format(br[0]))
                     return
             
-            xbotpp.state['connection'].send_message(message_information['target'], buf)
+            for line in buf.split('\n'):
+                xbotpp.state['connection'].send_message(message_information['target'], line)
 
     def unload(self, name):
         '''\
@@ -276,5 +314,10 @@ class monitor:
                 for e_handler in e_type:
                     if e_handler == self.loaded[name]['events'][sid]:
                         del self.loaded[name]['events'][sid]
+
+        # Remove command handlers
+        for command in self.commands:
+            if self.commands[command].module == name:
+                del self.commands[command]
 
         del self.loaded[name]
