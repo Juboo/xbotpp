@@ -238,10 +238,8 @@ class monitor:
 
             commands.append(temp)
             del temp
-            
             debug.write('split ended: {}'.format(repr(commands)))
             
-
             buf = ""
 
             for br in commands:
