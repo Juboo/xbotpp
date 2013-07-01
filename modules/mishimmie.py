@@ -33,7 +33,8 @@ def search(info, args, buf):
             return "\x02Mishimmie:\x02 No results."
 
     else:
-       return "Usage: %smi <query> -- search the Mishimmie for <query>" % xbotpp.config['bot']['prefix']
+        return "Usage: %smi <query> -- search the Mishimmie for <query>" % xbotpp.config['bot']['prefix']
+
 
 def miscan(url):
     """\
