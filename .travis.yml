@@ -8,6 +8,6 @@ script:
     - "nosetests -vw tests/xbotpp/"
 notifications:
     email: false
-    irc:
-        channels:
-            - "irc.stormbit.net#xbotpp"
+    webhooks:
+        urls:
+            - http://n.tkte.ch/h/1030/iP6ytEIMOAHMpf_6WflLEbMO
