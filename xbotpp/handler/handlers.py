@@ -25,7 +25,8 @@ def bind_event(event, handler):
 
     global dispatch
     if event in dispatch:
-        dispatch[event].append(handler)
+        if not handler in dispatch[event]:
+            dispatch[event].append(handler)
     else:
         raise EventNotFound()
 
@@ -35,7 +36,10 @@ def on_message(revent):
     '''
 
     for function in dispatch['message']:
-        function(revent)
+        try:
+            function(revent)
+        except Exception as e:
+            debug.exception("Exception in `on_message` event handler", e)
 
 def on_user_join(revent):
     '''\
@@ -43,7 +47,10 @@ def on_user_join(revent):
     '''
 
     for function in dispatch['user_join']:
-        function(revent)
+        try:
+            function(revent)
+        except Exception as e:
+            debug.exception("Exception in `on_user_join` event handler", e)
 
 def on_user_part(revent):
     '''\
@@ -51,7 +58,10 @@ def on_user_part(revent):
     '''
 
     for function in dispatch['user_part']:
-        function(revent)
+        try:
+            function(revent)
+        except Exception as e:
+            debug.exception("Exception in `on_user_part` event handler", e)
 
 def on_user_change_nick(revent):
     '''\
@@ -59,4 +69,7 @@ def on_user_change_nick(revent):
     '''
 
     for function in dispatch['user_change_nick']:
-        function(revent)
+        try:
+            function(revent)
+        except Exception as e:
+            debug.exception("Exception in `on_user_change_nick` event handler", e)
