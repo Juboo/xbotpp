@@ -1,97 +1,75 @@
 # vim: noai:ts=4:sw=4:expandtab:syntax=python
+__xbotpp_module__ = "mishimmie"
 
-import urllib
 import re
+import urllib
+import xbotpp
+import xbotpp.modules
+import xbotpp.debug
 from lxml import html
-from xbotpp.modules import Module
 
 
-class mishimmie(Module):
+@xbotpp.modules.on_command('mi')
+def search(info, args, buf):
     """\
-    Module to scan recieved URLs for Mishimmie posts, and provide a command
-    to search the Mishimmie.
+    Command to search the Mishimmie for a given search term.
+
+    Constructs a search URL and feeds it to :py:func:`miscan` to get information on it.
     """
 
-    def __init__(self):
-        """\
-        Binds the URL search to `shimmie\.katawa-shoujo\.com` and the search function to `mi`.
-        """
-
-        self.bind_command("mi", self.search)
-        self.bind_command("shimmie\.katawa-shoujo\.com", self.ogscan, "", "url")
-        Module.__init__(self)
-
-    def search(self, bot, event, args, buf):
-        """\
-        Command to search the Mishimmie for a given search term.
-
-        Constructs a search URL and feeds it to :py:func:`miscan` to get information on it.
-        """
-
-        if len(args) >= 1:
-            url = "";
-            if re.match("id:", args[0]):
-                terms = re.sub('id:', '', args[0])
-                url = "http://shimmie.katawa-shoujo.com/post/view/%s" % urllib.parse.quote(terms)
-            else:
-                terms = ' '.join(args)
-                url = "http://shimmie.katawa-shoujo.com/post/list/%s/1" % urllib.parse.quote(terms)
-
-            res = self.miscan(url)
-            if res:
-                return "\x02Mishimmie:\x02 %s // %s" % (res['desc'], res['url'])
-            else:
-                return "\x02Mishimmie:\x02 No results."
-
+    if len(args) >= 1:
+        url = "";
+        if re.match("id:", args[0]):
+            terms = re.sub('id:', '', args[0])
+            url = "http://shimmie.katawa-shoujo.com/post/view/%s" % urllib.parse.quote(terms)
         else:
-           return "Usage: %smi <query> -- search the Mishimmie for <query>" % self.bot.prefix
+            terms = ' '.join(args)
+            url = "http://shimmie.katawa-shoujo.com/post/list/%s/1" % urllib.parse.quote(terms)
 
-    def ogscan(self, bot, event, args, buf):
-        """\
-        Registered URL handler for `shimmie\.katawa-shoujo\.com`.
-        Calls the :py:func:`miscan` function to get information on the URL.
-        """
-
-        res = self.miscan(args)
+        res = miscan(url)
         if res:
-            return "\x02Mishimmie:\x02 %s" % res['desc']
+            return "\x02Mishimmie:\x02 %s // %s" % (res['desc'], res['url'])
+        else:
+            return "\x02Mishimmie:\x02 No results."
 
-    def miscan(self, url):
-        """\
-        Mishimmie URL scanning function.
+    else:
+       return "Usage: %smi <query> -- search the Mishimmie for <query>" % xbotpp.config['bot']['prefix']
 
-        Grabs the HTML for the given URL, and scans it.
-        In the case of being given a single post URL, returns the tags and the canonical page URL.
-        In the case of being given a search page URL, returns the tags and the canonical page URL of the
-        first post on the search page.
+def miscan(url):
+    """\
+    Mishimmie URL scanning function.
 
-        Returns a dict with 'desc', 'url' entries, or None if no information could be found.
+    Grabs the HTML for the given URL, and scans it.
+    In the case of being given a single post URL, returns the tags and the canonical page URL.
+    In the case of being given a search page URL, returns the tags and the canonical page URL of the
+    first post on the search page.
 
-        :rtype: dict or None
-        """
+    Returns a dict with 'desc', 'url' entries, or None if no information could be found.
 
-        self.bot._debug("Scanning Mishimmie for info on %s..." % url)
-        rawres = urllib.request.urlopen(url, timeout = 5)
-        result = str(rawres.read(), 'utf8')
-        doc = html.document_fromstring(result)
+    :rtype: dict or None
+    """
 
-        try:
-            posturl = ""
-            postdesc = ""
-            self.bot._debug('URL: %s' % rawres.geturl())
+    xbotpp.debug.write("Scanning Mishimmie for info on %s..." % url)
+    rawres = urllib.request.urlopen(url, timeout = 5)
+    result = str(rawres.read(), 'utf8')
+    doc = html.document_fromstring(result)
 
-            if re.search('/post/view/', rawres.geturl()):
-                self.bot._debug('On a post page.')
-                posturl = rawres.geturl()
-                postdesc = doc.get_element_by_id('imgdata').xpath('form/table/tr/td/input')[0].get('value')
-            else:
-                self.bot._debug('On a search result page.')
-                posturl = "http://shimmie.katawa-shoujo.com%s" % doc.find_class('thumb')[0].xpath('a')[0].get('href')
-                postdesc = doc.find_class('thumb')[0].xpath('a/img')[0].get("alt").partition(' // ')[0]
+    try:
+        posturl = ""
+        postdesc = ""
+        xbotpp.debug.write('URL: %s' % rawres.geturl())
 
-            posturl = re.sub('\?.*', '', posturl)
-            return { 'desc': postdesc, 'url': posturl }
+        if re.search('/post/view/', rawres.geturl()):
+            xbotpp.debug.write('On a post page.')
+            posturl = rawres.geturl()
+            postdesc = doc.get_element_by_id('imgdata').xpath('form/table/tr/td/input')[0].get('value')
+        else:
+            xbotpp.debug.write('On a search result page.')
+            posturl = "http://shimmie.katawa-shoujo.com%s" % doc.find_class('thumb')[0].xpath('a')[0].get('href')
+            postdesc = doc.find_class('thumb')[0].xpath('a/img')[0].get("alt").partition(' // ')[0]
 
-        except IndexError:
-            return None
+        posturl = re.sub('\?.*', '', posturl)
+        return { 'desc': postdesc, 'url': posturl }
 
+    except IndexError:
+        return None

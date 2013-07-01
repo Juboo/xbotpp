@@ -1,5 +1,3 @@
-.. _internal:
-
 Internal modules
 ================
 
@@ -7,6 +5,7 @@ Internal modules
    :maxdepth: 2
 
    core
+   debug
    modules
-   botio
-
+   misc
+   config

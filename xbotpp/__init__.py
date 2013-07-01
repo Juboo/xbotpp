@@ -1,155 +1,107 @@
 # vim: noai:ts=4:sw=4:expandtab:syntax=python
 
 import os
-import irc.bot
-import irc.client
-import datetime
 import re
-import signal
-import traceback
+import sys
+import json
+import inspect
+import argparse
+from xbotpp.ptr import ptr
+from xbotpp import debug
+from xbotpp import util
 
-from . import modules
-from . import botio
+__version__ = 'v0.3.0'
+config = ptr()
+state = ptr()
 
+def parse_args(args=None):
+    '''Parse the arguments to the bot.'''
 
-class Bot(irc.bot.SingleServerIRCBot):
-    def __init__(self, config):
-        """\
-        Initialize the bot, reading the configuration from `config`.
+    parser = argparse.ArgumentParser(usage='xbotpp [options]')
+    parser.add_argument('-c', '--config', metavar='FILE', help='read configuration from FILE', default='config.json')
+    parser.add_argument('-n', '--network', metavar='NETWORK', help='connect to the network named NETWORK')
+    parser.add_argument("--debug", action='store_true', help="enable debugging information")
+    return parser.parse_args(args)
 
-        :param config: bot configuration
-        :type config: :py:class:`configparser.ConfigParser`
-        """
+def main():
+    '''Command-line entry point.'''
 
-        self.config = config
-        self.prefix = config.get('bot', 'prefix')
-        self.debug = False
-        self.version = "v0.2.13"
-        self.modules = modules.Modules(self)
-        self.botio = botio.BotIO(self)
+    options = parse_args()
+    if options.debug:
+        set_debug()
 
-        if os.environ.get('READTHEDOCS', None) == 'True':
-            self.config.set("bot", "skip_load", "True")
+    init(options)
 
-        if self.config.has_option("bot", "skip_load"):
-            return None
+def set_debug(e=True):
+    '''Enable or disable debugging mode.'''
 
-        signal.signal(signal.SIGINT, self._goodbye)
-        signal.signal(signal.SIGTERM, self._goodbye)
+    debug.print_flagged = e
+    debug.write('Debugging information has been %s.' % 'enabled' if e else 'disabled', debug.levels.Info)
 
-        self.modules.load_init(config.module_path)
-        self._debug("Loaded commands: %s" % ". ".join(self.modules.modules['command']))
+def save_config():
+    fh = open(state['configfile'], 'w+')
+    json.dump(config.obj_get(), fh, indent=4, separators=(',', ': '), sort_keys=True)
+    fh.close()
 
-        hosts = []
-        _hosts = [s.strip() for s in self.config.get(self.config.active_network, "servers").split(',')]
-        serverpass = self.config.get(self.config.active_network, "server_password") if self.config.has_option(self.config.active_network, "server_password") else None
+def load_config():
+    config.obj_set(json.load(open(state['configfile'], 'r')))
 
-        for host in _hosts:
-            host = host.split(":")
-            hosts.append(irc.bot.ServerSpec(host[0], int(host[1]), serverpass))
+def init(options):
+    '''Initialize the bot and load our configuration.'''
 
-        nick = self.config.get(self.config.active_network, "nick")
-        realname = self.config.get("bot", "owner") if self.config.has_option("bot", "owner") else nick
+    from xbotpp import handler
+    from xbotpp import modules
+    from xbotpp import protocol
 
-        self._debug("Network: %s" % re.sub("network: ", "", self.config.active_network))
-        self._debug("Servers: %s" % ", ".join(_hosts))
-        self._debug("Nick: %s" % nick)
-        self._debug("Realname: %s" % realname)
+    debug.write('Entered init().')
 
-        irc.bot.SingleServerIRCBot.__init__(self, hosts, nick, realname)
-        self.connection.add_global_handler('pubnotice', self.on_notice)
-        self.connection.add_global_handler('privnotice', self.on_notice)
-
-        LineBuffer = irc.buffer.DecodingLineBuffer
-        LineBuffer.errors = 'replace'
-        self.connection.buffer_class = LineBuffer
-
-    def _log(self, buffer, mode=""):
-        """\
-        Log data to the bot's stdout.
-
-        Log entries look like this::
-
-            May 02 2013 05:50:46 <<< PING :wright.freenode.net
-
-        The ``>>>`` in the text is determined by the `mode` parameter:
-
-        - ``mode="out"`` makes this indicator ``>>>```
-        - ``mode="in"`` makes this indicator ``<<<```
-        - Any other mode makes this indicator ``---```
-
-        The indicator is only shown on the first line of each log entry.
-
-        The `buffer` argument can either be a string or a list of lines.
-        """
-
-        log = datetime.datetime.now().strftime("%b %d %Y %H:%M:%S")
-
-        if mode == "out":
-            _pad = ">>>"
-        elif mode == "in":
-            _pad = "<<<"
-        else:
-            _pad = "---"
-
-        if isinstance(buffer, str):
-            buffer = buffer.split("\n")
-
-        for index, line in enumerate(buffer):
-            print("%s %s %s" % (log, _pad if index == 0 else "   ", line))
-
-    def _debug(self, message, event=None):
-        """\
-        Logs debug information to stdout, and if the `bot.debug` flag is enabled,
-        sends it to the event source from the given event.
-        """
-
-        if self.debug and event:
-            self.connection.notice(event.source, message)
-        self._log(message)
-
-    def get_version(self):
-        """\
-        Return the bot version.
-
-        :rtype: str
-        """
-
-        return "xbotpp %s" % str(self.version)
-
-    def on_nicknameinuse(self, client, event):
-        client.nick(client.get_nickname() + "_")
-
-    def on_welcome(self, client, event):
-        for channel in [s.strip() for s in self.config.get(self.config.active_network, "channels").split(",")]:
-            client.join(channel)
-
-    def on_pubmsg(self, client, event):
-        self._read(client, event)
-
-    def on_privmsg(self, client, event):
-        self._read(client, event)
-
-    def on_notice(self, client, event):
-        self._read(client, event)
-
-    def on_all_raw_messages(self, client, event):
-        self._log(event.arguments[0], "in")
-
-    def _read(self, client, event):
-        """\
-        Call :py:func:`xbotpp.botio.BotIO.read` for any messages received,
-        and handle exceptions that may be raised.
-        """
-
+    if os.path.exists(options.config):
         try:
-            self.botio.read(client, event)
-        except:
-            error_message = "Traceback (most recent call last):\n" + '\n'.join(traceback.format_exc().split("\n")[-4:-1])
-            self._debug(error_message, event=event)
+            state['configfile'] = options.config
+            load_config()
 
-    def _action(self, event):
-        self._debug("Action: %s" % event.arguments[0], event=event)
+            if not 'networks' in config:
+                debug.write('No \'networks\' section in config.', debug.levels.Error)
+                raise SystemExit(1)
 
-    def _goodbye(self):
-        self.die("See ya~")
+            debug.write('Initialized config.', debug.levels.Info)
+
+        except Exception as e:
+            debug.exception('Failed to initialize config.', e)
+            raise SystemExit(1)
+
+    else:
+        message = '''\
+        The config file we've been given does not exist.
+        File: "{0}"
+        Please use the xbotpp-setup utility to create a configuration,
+        or xbotpp-migrate to migrate a pre-v0.3.x config.'''
+
+        debug.write(message.format(options.config), debug.levels.Error)
+        raise SystemExit(1)
+
+    # Select network
+    if options.network in config['networks']:
+        state['network'] = options.network
+        debug.write("Network: %s" % state['network'], debug.levels.Info)
+    else:
+        debug.write('Unknown network.', debug.levels.Error)
+        raise SystemExit(2)
+
+    # Set up module monitor
+    state['modules_monitor'] = modules.monitor()
+    state['modules_monitor'].load_init()
+
+    # Set up our protocol library
+    p = config['networks'][state['network']]['protocol']
+    if p in dir(protocol):
+        state['connection'] = eval('protocol.%s.%s' % (p, p))()
+    else:
+        debug.write('''Protocol handler for network not found (network protocol: '%s')''' % p, debug.levels.Error)
+        raise SystemExit(2)
+
+    # and start
+    state['connection'].start()
+
+    # when we escape from that, save our config
+    save_config()    

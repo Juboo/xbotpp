@@ -1,117 +1,85 @@
 # vim: noai:ts=4:sw=4:expandtab:syntax=python
+__xbotpp_module__ = "admin"
 
-from xbotpp.modules import Module
+import xbotpp.debug
+import xbotpp.modules
 
 
-class module(Module):
-    """\
-    Command module to interact with bot modules.    
-    """
+@xbotpp.modules.on_command('rehash', 1)
+def rehash_command(info, args, buf):
+    xbotpp.load_config()
+    return "Done."
 
-    def __init__(self):
-        self.bind_command("reload", self.reload, "admin")
-        self.bind_command("unload", self.unload, "admin")
-        Module.__init__(self)
+@xbotpp.modules.on_command('saveconf', 1)
+def saveconf_command(info, args, buf):
+    xbotpp.save_config()
+    return "Done."
 
-    def reload(self, bot, event, args, buf):
-        """\
-        Call :py:func:`xbotpp.modules.Modules.load` for each argument, returning a formatted
-        string with the list of modules that were successfully loaded (if any) and the list of
-        modules that failed to load (if any).
+@xbotpp.modules.on_command('reload', 1)
+def reload_command(info, args, buf):
+    loaded = 0
+    failed = []
 
-        :rtype: str
-        """
-
-        done = []
-        failed = []
-
-        for mod in args:
-            status = self.bot.modules.load(mod)
-
-            if status is True:
-                done.append(mod)
-            else:
-                failed.append(mod)
-
-        if len(failed) == 0 and len(done) > 0:
-            return "Reloaded %s." % ", ".join(done)
-        elif len(failed) > 0 and len(done) > 0:
-            return "Reloaded %s but failed to reload %s." % (", ".join(failed), ", ".join(done))
-        else:
-            return "Failed to reload %s." % ", ".join(failed)
-
-    def unload(self, bot, event, args, buf):
-        """\
-        Unload the given module.
-        """
-
-        if self.bot.modules.unload(args[0]):
-            return "Unloaded %s successfully." % args[0]
-        else:
-            return "Unloading %s failed." % args[0]
-
-class prefix(Module):
-    """\
-    Temporarily change bot prefix.
-    """
-
-    def __init__(self):
-        self.bind_command("prefix", self.action, "admin")
-        self.bind_command("prefix", self.privmsg, "", "privmsg")
-        Module.__init__(self)
-
-    def action(self, bot, event, args, buf):
-        """\
-        Set the prefix to the given character.
-        """
-
-        if len(args[0]) == 1:
-            self.bot.prefix = args[0]
-            return "Prefix set to %s." % args[0]
-        else:
-            return "Invalid prefix."
-
-    def privmsg(self, bot, event, args, buf):
-        """\
-        Respond to messages mentioning the bot's name and the word "help" with
-        a message containing the current command prefix.
-        """
-
+    for module in args:
         try:
-            if self.bot.connection.get_nickname() in args[0] and "help" in args[1]:
-                self.bot.connection.notice(event.target, "Hi, I'm a bot! Try using %shelp to see what I can do." % self.bot.prefix)
-        except:
-            pass
+            if module in xbotpp.state['modules_monitor'].loaded:
+                xbotpp.state['modules_monitor'].loaded[module]['reload'] = True
+            xbotpp.state['modules_monitor'].load(module)
+            loaded += 1
+        except xbotpp.modules.error.ModuleLoadingException:
+            failed.append(module)
 
-class misc(Module):
-    """\
-    Miscellaneous admin commands.
-    """
+    failstr = "Failed: " + ", ".join(failed)
+    return "Reloaded {0} of {1} modules. {2}".format(loaded, len(args), failstr if failed != [] else '')
 
-    def __init__(self):
-        self.bind_command("eval", self.eval, "admin")
-        self.bind_command("rehash", self.rehash, "admin")
-        Module.__init__(self)
+@xbotpp.modules.on_command('unload', 1)
+def unload_command(info, args, buf):
+    '''\
+    Unload the modules given as arguments.
+    '''
+    
+    loaded = 0
+    failed = []
 
-    def eval(self, bot, event, args, buf):
-        """\
-        Evaluate the given Python code in the current context.
-        """
-
-        if len(args[0]) is 0:
-            return "%seval <herp>" % self.bot.prefix
-        else:
-            ret = eval(" ".join(args))
-            if not isinstance(ret, str):
-                ret = str(ret, 'utf-8')
-            return ret
-
-    def rehash(self, bot, event, args, buf):
+    for module in args:
         try:
-            if self.bot.config.read(self.bot.config.conf_path):
-                return "Config rehashed."
-            else:
-                return "Error while rehashing config."
+            xbotpp.state['modules_monitor'].unload(module)
+            loaded += 1
         except:
-            return "An exception occurred while rehashing the config."
+            failed.append(module)
 
+    failstr = "Failed: " + ", ".join(failed)
+    return "Unloaded {0} of {1} modules. {2}".format(loaded, len(args), failstr if failed != [] else '')
+
+@xbotpp.modules.on_command('modlist', 1)
+def modlist_command(info, args, buf):
+    '''\
+    Return a list of loaded modules, their event handlers and their registered commands.
+    '''
+
+    b = []
+    for mod in xbotpp.state['modules_monitor'].loaded:
+        sidlist = []
+        for sid in xbotpp.state['modules_monitor'].loaded[mod]['events']:
+            event = getattr(xbotpp.state['modules_monitor'].loaded[mod]['events'][sid][1], '__xbotpp_event__', None)
+            sidlist.append("{0} [{1}, {2}]".format(sid, xbotpp.state['modules_monitor'].loaded[mod]['events'][sid][0], event))
+
+        commandlist = []
+        for command in xbotpp.state['modules_monitor'].commands:
+            if xbotpp.state['modules_monitor'].commands[command]['module'] == mod:
+                commandlist.append(command)
+
+        sid = ", ".join(sidlist) if sidlist != [] else 'none'
+        cmd = ", ".join(commandlist) if commandlist != [] else 'none'
+        b.append("{0} - events: {1}; commands: {2}".format(mod, sid, cmd))
+
+    del mod
+    return "\n".join(b)
+
+@xbotpp.modules.on_command('eval', 1)
+def eval_command(info, args, buf):
+    '''\
+    Evaluate a given Python string.
+    '''
+
+    return str(eval(" ".join(args)))
