@@ -5,6 +5,16 @@ import xbotpp.debug
 import xbotpp.modules
 
 
+@xbotpp.modules.on_command('rehash', 1)
+def rehash_command(info, args, buf):
+    xbotpp.load_config()
+    return "Done."
+
+@xbotpp.modules.on_command('saveconf', 1)
+def saveconf_command(info, args, buf):
+    xbotpp.save_config()
+    return "Done."
+
 @xbotpp.modules.on_command('reload', 1)
 def reload_command(info, args, buf):
     loaded = 0

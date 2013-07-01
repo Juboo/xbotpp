@@ -38,6 +38,14 @@ def set_debug(e=True):
     debug.print_flagged = e
     debug.write('Debugging information has been %s.' % 'enabled' if e else 'disabled', debug.levels.Info)
 
+def save_config():
+    fh = open(state['configfile'], 'w+')
+    json.dump(config.obj_get(), fh, indent=4, separators=(',', ': '), sort_keys=True)
+    fh.close()
+
+def load_config():
+    config.obj_set(json.load(open(state['configfile'], 'r')))
+
 def init(options):
     '''Initialize the bot and load our configuration.'''
 
@@ -49,8 +57,8 @@ def init(options):
 
     if os.path.exists(options.config):
         try:
-            global config
-            config.obj_set(json.load(open(options.config, 'r')))
+            state['configfile'] = options.config
+            load_config()
 
             if not 'networks' in config:
                 debug.write('No \'networks\' section in config.', debug.levels.Error)
@@ -92,4 +100,8 @@ def init(options):
         debug.write('''Protocol handler for network not found (network protocol: '%s')''' % p, debug.levels.Error)
         raise SystemExit(2)
 
+    # and start
     state['connection'].start()
+
+    # when we escape from that, save our config
+    save_config()    
