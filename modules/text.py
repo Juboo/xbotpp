@@ -7,6 +7,7 @@ import argparse
 import xbotpp.debug
 import xbotpp.modules
 
+
 def _tr(str, inAlphabet='aeioubcdfghjklmnpqrstvwxyz', outAlphabet='iouaenpqrstvwxyzbcdfghjklm'):
     buffer = ""
     for value in str:
@@ -21,6 +22,7 @@ def _tr(str, inAlphabet='aeioubcdfghjklmnpqrstvwxyz', outAlphabet='iouaenpqrstvw
         else:
             buffer += value
     return buffer
+
 
 @xbotpp.modules.on_command('tr')
 def tr(info, args, buf):
@@ -47,7 +49,8 @@ def tr(info, args, buf):
     if options.help or buf == "":
         return h
 
-    return _tr(buf, options.a_in, options.a_out) 
+    return _tr(buf, options.a_in, options.a_out)
+
 
 @xbotpp.modules.on_command('lolcrypt')
 def lolcrypt(info, args, buf):
@@ -69,4 +72,3 @@ def lolcrypt(info, args, buf):
     else:
         # en-lolcrypt
         return _tr(text, 'aeioubcdfghjklmnpqrstvwxyz', 'iouaenpqrstvwxyzbcdfghjklm')
-
