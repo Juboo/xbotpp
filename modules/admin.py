@@ -34,9 +34,8 @@ def reload_command(info, args, buf):
 
 @xbotpp.modules.on_command('unload', 1)
 def unload_command(info, args, buf):
-    '''\
-    Unload the modules given as arguments.
-    '''
+    """Unload the modules given as arguments.
+    """
     
     loaded = 0
     failed = []
@@ -53,9 +52,8 @@ def unload_command(info, args, buf):
 
 @xbotpp.modules.on_command('modlist', 1)
 def modlist_command(info, args, buf):
-    '''\
-    Return a list of loaded modules, their event handlers and their registered commands.
-    '''
+    """ Return a list of loaded modules, their event handlers and their registered commands.
+    """
 
     b = []
     for mod in xbotpp.state['modules_monitor'].loaded:
@@ -78,8 +76,7 @@ def modlist_command(info, args, buf):
 
 @xbotpp.modules.on_command('eval', 1)
 def eval_command(info, args, buf):
-    '''\
-    Evaluate a given Python string.
-    '''
-
+    """Evaluate a given Python string.
+    """
     return str(eval(" ".join(args)))
+
