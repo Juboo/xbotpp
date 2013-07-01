@@ -50,7 +50,7 @@ def miscan(url):
     """
 
     xbotpp.debug.write("Scanning Mishimmie for info on %s..." % url)
-    rawres = urllib.request.urlopen(url, timeout = 5)
+    rawres = urllib.request.urlopen(url, timeout=5)
     result = str(rawres.read(), 'utf8')
     doc = html.document_fromstring(result)
 
@@ -69,7 +69,7 @@ def miscan(url):
             postdesc = doc.find_class('thumb')[0].xpath('a/img')[0].get("alt").partition(' // ')[0]
 
         posturl = re.sub('\?.*', '', posturl)
-        return { 'desc': postdesc, 'url': posturl }
+        return {'desc': postdesc, 'url': posturl}
 
     except IndexError:
         return None
