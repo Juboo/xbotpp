@@ -11,6 +11,20 @@ from xbotpp import handler
 class ServerSpec:
     '''\
     An IRC server specification.
+
+    >>> ServerSpec('irc.stormbit.net')
+    <ServerSpec host='irc.stormbit.net', port=6667, password=None>
+    >>> ServerSpec('irc.stormbit.net', 6665)
+    <ServerSpec host='irc.stormbit.net', port=6665, password=None>
+    >>> ServerSpec('my.znc.instance', 6666, 'username:password')
+    <ServerSpec host='my.znc.instance', port=6666, password='username:password'>
+
+    Coercing a ServerSpec object to a string will give you the host and port, but
+    not the password:
+
+    >>> str(ServerSpec('my.znc.instance', 6666, 'username:password'))
+    'my.znc.instance:6666'
+    
     '''
 
     def __init__(self, host, port=6667, password=None):
@@ -20,6 +34,10 @@ class ServerSpec:
 
     def __str__(self):
         return '%s:%d' % (self.host, self.port)
+
+    def __repr__(self):
+        s = "<ServerSpec host={host}, port={port}, password={password}>"
+        return s.format(host=repr(self.host), port=repr(self.port), password=repr(self.password))
 
 class irc(irclib_client.SimpleIRCClient):
     '''\
@@ -152,20 +170,34 @@ class irc(irclib_client.SimpleIRCClient):
             client.join(channel)
 
     def get_nickname(self):
+        '''\
+        Returns the current bot nickname.
+        '''
+
         return self.connection.get_nickname()
 
     def send_message(self, target, message):
+        '''\
+        Sends `message` to `target` on the server.
+        '''
+
         self.connection.privmsg(target, message)
 
     def generic_message(self, client, event):
         '''\
-        Generic IRC message handler.
+        Generic IRC message handler. Dispatches message events with the correct
+        type when they are recieved from the server. This function is called by
+        the underlying IRC library, and should not be called by the user.
         '''
 
         h = handler.event.message(event.source.nick, event.target, event.arguments[0], event.type)
         handler.handlers.on_message(h)
 
     def disconnect(self, message="See ya~"):
+        '''\
+        Disconnect from the server, with the quit message `message`.
+        '''
+
         debug.write('Disconnecting: %s' % message, debug.levels.Info)
         self.connection.disconnect(message)
 
@@ -174,7 +206,7 @@ class irc(irclib_client.SimpleIRCClient):
 
     def start(self):
         '''\
-        Start the bot, waiting for messages and calling the handler as necessary.
+        Connect to the server, and wait for events to process.
         '''
 
         self._connect()

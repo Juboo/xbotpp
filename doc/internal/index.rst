@@ -7,7 +7,5 @@ Internal modules
    core
    debug
    modules
-   ptr
-   handler
+   misc
    config
-
