@@ -39,9 +39,8 @@ def info(info, args, buf):
 
 @xbotpp.modules.on_command('list')
 def command_list(info, args, buf):
-    '''\
-    Return a list of commands.
-    '''
+    """Return a list of commands.
+    """
 
     if len(args) >= 1:
         level = int(args[0])
@@ -54,3 +53,4 @@ def command_list(info, args, buf):
             b.append(s)
 
     return "Available commands: {}".format(", ".join(b))
+
