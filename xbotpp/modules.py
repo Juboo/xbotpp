@@ -198,7 +198,6 @@ class monitor:
             'module': inspect.getmodule(function).__xbotpp_module__
         }
 
-
     def load_init(self):
         '''\
         Load all the modules present in the `modules -> load` section of the configuration.

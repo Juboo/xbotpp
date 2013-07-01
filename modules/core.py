@@ -44,4 +44,14 @@ def command_list(info, args, buf):
     Return a list of commands.
     '''
 
-    return "Available commands: {}".format(", ".join([s for s in xbotpp.state['modules_monitor'].commands]))
+    if len(args) >= 1:
+        level = int(args[0])
+    else:
+        level = 0
+
+    b = []
+    for s in xbotpp.state['modules_monitor'].commands:
+        if xbotpp.state['modules_monitor'].commands[s]['privlevel'] <= level:
+            b.append(s)
+
+    return "Available commands: {}".format(", ".join(b))
