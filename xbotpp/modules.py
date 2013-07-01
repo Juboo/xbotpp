@@ -16,6 +16,26 @@ from xbotpp import handler
 
 
 def on_event(event):
+    '''\
+    Function constructor for event handlers.
+
+    >>> @xbotpp.modules.on_event('message')
+    ... def message_handler(event):
+    ...     print(repr(event))
+    
+    See the :ref:`event_classes` documentation for what the `event` parameter
+    will contain for each event.
+
+    After this constructor has been used, the function will have it's SID and
+    the event that it is handling set as attributes:
+
+    >>> getattr(message_handler, '__xbotpp_event__', None)
+    'message'
+    >>> getattr(message_handler, '__xbotpp_sid__', None)
+    'Sd72Hbo72X'
+
+    '''
+
     def constructor(r):
         sid = util.random_string()
         setattr(r, '__xbotpp_event__', event)
@@ -29,13 +49,48 @@ def on_event(event):
     return constructor
 
 def on_command(command, privlevel=0):
+    '''\
+    Function constructor for command handlers.
+
+    >>> @xbotpp.modules.on_command('test')
+    ... def test_command_handler(info, args, buf):
+    ...     return 'Called by {0} with args {1}'.format(info['source'], ", ".join(args))
+
+    Privilege levels can be set with the `privlevel` argument to the constructor:
+
+    >>> @xbotpp.modules.on_command('admincommand', 1)
+    ... def admit_command_handler(info, args, buf):
+    ...     return 'Woo, admin command!'
+
+    Running this looks like the following:
+
+    .. code-block:: text
+
+         <user> !admincommand
+          <bot> admincommand: Not authorized.
+        <admin> !admincommand
+          <bot> Woo, admin command!
+
+    Denying access to admin-level commands is done by the bot's message handler
+    itself, and is not something that modules need to worry about other than
+    setting a privilege level setting.
+    '''
+
     def constructor(r):
         xbotpp.state['modules_monitor'].bind_command(command, privlevel, r)
         return r
     return constructor
 
 class error:
+    '''\
+    Exceptions thrown by the module routines.
+    '''
+
     class ModuleNotLoaded(BaseException):
+        '''\
+        The module `name` does not exist.
+        '''
+
         def __init__(self, name):
             self.name = name
 
@@ -43,6 +98,11 @@ class error:
             return self.name
 
     class ModuleLoadingException(BaseException):
+        '''\
+        An error occurred loading a module. More details may or may not be
+        found in `innerexception`.
+        '''
+
         def __init__(self, innerexception=None):
             self.innerexception = innerexception
 
@@ -50,29 +110,42 @@ class error:
             return str(self.innerexception)
 
 class monitor:
+    '''\
+    The module monitor.
+    '''
+
     def __init__(self):
+
+        #: Paths to look for modules in.
         self.paths = xbotpp.config['modules']['paths']
 
-        # self.loaded = {
-        #     'module_name': {
-        #         'module': <module ...>,
-        #         'events': {
-        #             'sid': <function ...>,
-        #             'sid': <function ...>
-        #         }
-        #     }
-        # }
-
+        #: .. code-block:: python
+        #:
+        #:    {
+        #:        'module_name': {
+        #:            'module': <module ...>,
+        #:            'events': {
+        #:                'sid': <function ...>,
+        #:                'sid': <function ...>,
+        #:                ...
+        #:            }
+        #:        },
+        #:        ...
+        #:    }
+        #:
         self.loaded = {}
 
-        # self.commands = {
-        #     'command_name': {
-        #         'function': <function ...>,
-        #         'privlevel': 0,
-        #         'module': 'module_name'
-        #     }
-        # }
-
+        #: .. code-block:: python
+        #:
+        #:    {
+        #:        'command_name': {
+        #:            'function': <function ...>,
+        #:            'privlevel': 0,
+        #:            'module': 'module_name'
+        #:        },
+        #:        ...
+        #:    }
+        #:
         self.commands = {}
 
         for path in self.paths:
@@ -81,6 +154,16 @@ class monitor:
         handler.handlers.bind_event('message', self.on_message)
 
     def bind_command(self, command, privlevel, function):
+        '''\
+        Bind `function` to the command `command`, with the privilege level
+        `privlevel`.
+
+        Available privilege levels:
+
+        - ``0``: Normal command
+        - ``1``: Admin command
+        '''
+
         self.commands[command] = {
             'function': function,
             'privlevel': privlevel,
@@ -89,11 +172,21 @@ class monitor:
 
 
     def load_init(self):
+        '''\
+        Load all the modules present in the `modules -> load` section of the configuration.
+        '''
+
         for module in xbotpp.config['modules']['load']:
             status = self.load(module)
             debug.write('Loading module %s: %s' % (module, 'OK' if status else 'failed'), debug.levels.Info)
 
     def load(self, name):
+        '''\
+        Load the module `name`.
+
+        Raises :exc:`error.ModuleLoadingException` on an error.
+        '''
+
         try:
             module = importlib.import_module(name)
             imp.reload(module)
@@ -143,22 +236,39 @@ class monitor:
                     commands.append(temp)
                     temp = []
 
-            debug.write('split ended')
             commands.append(temp)
             del temp
+            
+            debug.write('split ended: {}'.format(repr(commands)))
+            
 
             buf = ""
 
             for br in commands:
-                debug.write('command: {}'.format(br[0]))
                 if br[0] in self.commands:
-                    debug.write('calling {}'.format(br[0]))
+                    debug.write('command {0} found, privlevel {1}'.format(br[0], self.commands[br[0]]['privlevel']))
+
+                    if self.commands[br[0]]['privlevel'] >= 1:
+                        if message_information['source'] != xbotpp.config['bot']['owner']:
+                            buf = "{}: Not authorized.".format(br[0])
+                            debug.write(buf)
+                            break
+
                     buf = self.commands[br[0]]['function'](message_information, br[1:], buf)
                     debug.write('buf: {}'.format(buf))
+                else:
+                    debug.write('command {} not found'.format(br[0]))
+                    return
             
             xbotpp.state['connection'].send_message(message_information['target'], buf)
 
     def unload(self, name):
+        '''\
+        Unload the module `name`.
+
+        If the module is not loaded, raises :exc:`error.ModuleNotLoaded`.
+        '''
+
         if name not in self.loaded:
             raise error.ModuleNotLoaded(name)
 

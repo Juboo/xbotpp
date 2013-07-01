@@ -7,6 +7,8 @@ Contents:
    :maxdepth: 2
 
    internal/index
+   events/index
+   protocol/index
    conf_format
 
 Indices and tables
