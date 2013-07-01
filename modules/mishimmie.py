@@ -18,7 +18,7 @@ def search(info, args, buf):
     """
 
     if len(args) >= 1:
-        url = "";
+        url = ""
         if re.match("id:", args[0]):
             terms = re.sub('id:', '', args[0])
             url = "http://shimmie.katawa-shoujo.com/post/view/%s" % urllib.parse.quote(terms)
