@@ -30,4 +30,3 @@ def choose(info, args, buf):
         return "%s %s%s." % (ans, intermediary, choice)
     else:
         return "{0}choose <item 1> or <item 2> [or <item n>] where 1 != 2 != n".format(xbotpp.config['bot']['prefix'])
-
