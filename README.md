@@ -11,6 +11,17 @@
 
 [![Build Status](https://travis-ci.org/aki--aki/xbotpp.png?branch=master)](https://travis-ci.org/aki--aki/xbotpp)
 
+## ATTENTION!
+
+xbot++ v0.3.0 is currently under construction.
+
+If you want a stable build, and don't plan to develop your own modules, grab the 
+[v0.2.13](https://github.com/aki--aki/xbotpp/tree/v0.2.13) tag:
+
+    $ git clone https://github.com/aki--aki/xbotpp.git
+    $ cd xbotpp
+    $ git checkout v0.2.13
+
 ## INSTALL
 
     $ pip install xbotpp
