@@ -10,11 +10,12 @@ import xbotpp.modules
 def test_event_handler(event):
     xbotpp.debug.write(repr(event))
 
+
 @xbotpp.modules.on_command('info')
 def info(info, args, buf):
     """Return information on the bot.
     """
-    
+
     infostr = " ".join([
         "I'm {nick}, running xbot++ {version} on Python {pyver}, ",
         "with {num_modules} module{module_plural} and {num_event_handlers} event handler{event_plural} registered."
@@ -37,6 +38,7 @@ def info(info, args, buf):
 
     return infostr.format(**formatters)
 
+
 @xbotpp.modules.on_command('list')
 def command_list(info, args, buf):
     """Return a list of commands.
@@ -53,4 +55,3 @@ def command_list(info, args, buf):
             b.append(s)
 
     return "Available commands: {}".format(", ".join(b))
-
