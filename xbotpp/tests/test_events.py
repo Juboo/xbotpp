@@ -66,8 +66,15 @@ class test_events(unittest.TestCase):
         a = Namespace()
         a.b = []
 
+        def change_name(i):
+            def constructor(r):
+                r.__name__ = str(i)
+                return r
+            return constructor
+
         for i in range(0, 10):
             @xbotpp.modules.on_event('message')
+            @change_name("handler_{}".format(i))
             def handler(revent):
                 a.b.append(revent)
 
