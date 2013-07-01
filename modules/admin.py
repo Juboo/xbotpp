@@ -32,11 +32,12 @@ def reload_command(info, args, buf):
     failstr = "Failed: " + ", ".join(failed)
     return "Reloaded {0} of {1} modules. {2}".format(loaded, len(args), failstr if failed != [] else '')
 
+
 @xbotpp.modules.on_command('unload', 1)
 def unload_command(info, args, buf):
     """Unload the modules given as arguments.
     """
-    
+
     loaded = 0
     failed = []
 
@@ -49,6 +50,7 @@ def unload_command(info, args, buf):
 
     failstr = "Failed: " + ", ".join(failed)
     return "Unloaded {0} of {1} modules. {2}".format(loaded, len(args), failstr if failed != [] else '')
+
 
 @xbotpp.modules.on_command('modlist', 1)
 def modlist_command(info, args, buf):
@@ -74,9 +76,9 @@ def modlist_command(info, args, buf):
     del mod
     return "\n".join(b)
 
+
 @xbotpp.modules.on_command('eval', 1)
 def eval_command(info, args, buf):
     """Evaluate a given Python string.
     """
     return str(eval(" ".join(args)))
-
