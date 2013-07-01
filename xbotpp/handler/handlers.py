@@ -10,7 +10,7 @@ dispatch = {
     'user_change_nick': [],
 }
 
-class EventNotFound(Exception):
+class EventNotFound(BaseException):
     pass
 
 def bind_event(event, handler):

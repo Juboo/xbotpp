@@ -151,6 +151,12 @@ class irc(irclib_client.SimpleIRCClient):
         for channel in [s.strip() for s in self.network['channels']]:
             client.join(channel)
 
+    def get_nickname(self):
+        return self.connection.get_nickname()
+
+    def send_message(self, target, message):
+        self.connection.privmsg(target, message)
+
     def generic_message(self, client, event):
         '''\
         Generic IRC message handler.
