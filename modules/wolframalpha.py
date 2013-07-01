@@ -97,6 +97,7 @@ def parse_result(result):
     else:
         return ["No acceptable mathematical result."]
 
+
 def get_result(query):
     """\
     Query WolframAlpha for `query`.
@@ -118,6 +119,7 @@ def get_result(query):
     result = result.replace("Stephen Wolfram", "Aki Jenkinson")
 
     return result
+
 
 @xbotpp.modules.on_command('calc')
 def calc(info, args, buf):
