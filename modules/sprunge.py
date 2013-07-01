@@ -6,6 +6,7 @@ import urllib.request
 import xbotpp.debug
 import xbotpp.modules
 
+
 @xbotpp.modules.on_command('sprunge')
 def sprunge(info, args, buf):
     """\
