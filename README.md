@@ -40,6 +40,11 @@ To compile the documentation yourself, run:
 
     $ sphinx-build -b html doc/ doc/_build
 
+## SUPPORT
+
+Find a bug? [File an issue](https://github.com/aki--aki/xbotpp/issues/new), or
+drop in to our IRC channel: **#xbotpp** on irc.stormbit.net.
+
 ## CREDITS
 
 Based on work by [Milos Ivanovic](https://github.com/milosivanovic) and [Daniel Oaks](https://github.com/DanielOaks).
