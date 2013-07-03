@@ -74,7 +74,7 @@ class irc(irclib_client.SimpleIRCClient):
         for event in _on_events:
             self.connection.add_global_handler(event, getattr(self, '_on_' + event, None), -20)
 
-        for event in ['privmsg', 'pubmsg', 'notice']:
+        for event in ['privmsg', 'pubmsg', 'privnotice', 'pubnotice']:
             self.connection.add_global_handler(event, self.generic_message, -20)
 
     def _connect(self):
