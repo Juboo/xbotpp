@@ -6,6 +6,12 @@ import xbotpp.debug
 import xbotpp.modules
 
 
+@xbotpp.modules.on_command('echo')
+def echo(info, args, buf):
+    if buf != "":
+        return buf
+    return " ".join(args)
+
 @xbotpp.modules.on_command('info')
 def info(info, args, buf):
     """Return information on the bot.
