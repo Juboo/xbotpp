@@ -310,15 +310,17 @@ class monitor:
             raise error.ModuleNotLoaded(name)
 
         # Remove event handlers
+        h = handler.handlers.dispatch
         for sid in self.loaded[name]['events']:
-            for e_type in handler.handlers.dispatch:
-                for i, e in enumerate(handler.handlers.dispatch[e_type]):
+            for e_type in h:
+                for i, e in enumerate(h[e_type]):
                     if handler.handlers.dispatch[e_type][i] == self.loaded[name]['events'][sid][1]:
                         del handler.handlers.dispatch[e_type][i]
 
         # Remove command handlers
-        for command in self.commands:
-            if self.commands[command]['module'] == name:
+        c = self.commands
+        for command in c:
+            if c[command]['module'] == name:
                 del self.commands[command]
 
         del self.loaded[name]
