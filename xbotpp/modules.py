@@ -312,14 +312,14 @@ class monitor:
         # Remove event handlers
         h = handler.handlers.dispatch
         for sid in self.loaded[name]['events']:
-            for e_type in h:
+            for e_type in h.keys():
                 for i, e in enumerate(h[e_type]):
                     if handler.handlers.dispatch[e_type][i] == self.loaded[name]['events'][sid][1]:
                         del handler.handlers.dispatch[e_type][i]
 
         # Remove command handlers
         c = self.commands
-        for command in c:
+        for command in c.keys():
             if c[command]['module'] == name:
                 del self.commands[command]
 
