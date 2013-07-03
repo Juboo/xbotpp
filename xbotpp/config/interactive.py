@@ -101,12 +101,12 @@ def main(options=None):
             if newconf['networks'][networkname]['nick'] == '':
                 newconf['networks'][networkname]['nick'] = False
 
-        newconf['networks'][networkname]['hosts'] = []
+        newconf['networks'][networkname]['servers'] = []
         hosts_done = False
         while hosts_done == False:
             host = input('Server to connect to (use format host:port): ')
             if host != '':
-                newconf['networks'][networkname]['hosts'].append(host)
+                newconf['networks'][networkname]['servers'].append(host)
 
                 if input('Add another server [y/N]? ').lower() != 'y':
                     hosts_done = True

@@ -76,8 +76,11 @@ def main(options=None):
                 y = re.sub('network: ', '', s)
                 newconf['networks'][y] = {'protocol': 'irc'}
                 for key in oldconf[s]:
-                    if key == 'channels' or key == 'hosts':
-                        newconf['networks'][y][key] = oldconf[s][key].split(',')
+                    if key in ['channels', 'hosts']:
+                        if key == 'hosts':
+                            newconf['networks'][y]['servers'] = oldconf[s]['hosts'].split(',')
+                        else:
+                            newconf['networks'][y][key] = oldconf[s][key].split(',')
                     else:
                         newconf['networks'][y][key] = oldconf[s][key]
             elif s.startswith('module: '):
