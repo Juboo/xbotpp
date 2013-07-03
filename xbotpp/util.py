@@ -4,6 +4,16 @@ import string
 import random
 
 
+def change_name(i):
+    '''\
+    Constructor method to change the name to `i`.
+    '''
+
+    def constructor(r):
+        setattr(r, '__name__', str(i))
+        return r
+    return constructor
+
 def random_string(size=10, chars=None):
     '''\
     Returns a random string of the given size and character set.
