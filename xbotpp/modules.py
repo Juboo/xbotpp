@@ -286,6 +286,7 @@ class monitor:
                             debug.write(buf)
                             break
                     try:
+                        message_information['command_name'] = br[0]
                         buf = self.commands[br[0]]['function'](message_information, br[1:], buf)
                     except Exception as e:
                         buf = "Exception in {0}: {1}".format(br[0], e)
