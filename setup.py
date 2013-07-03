@@ -17,6 +17,7 @@ setup(
             'xbotpp = xbotpp:main',
             'xbotpp-migrate = xbotpp.config.migrate:main',
             'xbotpp-config = xbotpp.config.interactive:main',
+            'xbotpp-socket-client = xbotpp.util.socket_client:main',
         ],
     },
     classifiers=[
