@@ -216,10 +216,12 @@ class monitor:
 
         try:
             # handle reloads right
+            u = False
             if name in self.loaded:
                 if 'reload' in self.loaded[name]:
-                    self.unload(name)
-                    self.create_table(name)
+                    u = True
+            if u:
+                self.unload(name)
 
             module = importlib.import_module(name)
             imp.reload(module)
@@ -309,18 +311,26 @@ class monitor:
         if name not in self.loaded:
             raise error.ModuleNotLoaded(name)
 
-        # Remove event handlers
-        h = handler.handlers.dispatch
-        for sid in self.loaded[name]['events']:
-            for e_type in h.keys():
-                for i, e in enumerate(h[e_type]):
-                    if handler.handlers.dispatch[e_type][i] == self.loaded[name]['events'][sid][1]:
-                        del handler.handlers.dispatch[e_type][i]
+        try:
+            # Remove event handlers
+            for sid in self.loaded[name]['events']:
+                types = [(i. e) for i, e in enumerate(handler.handlers.dispatch)]
+                debug.write(repr(types))
+                for e_index, e_type in types:
+                    typed = [(i, e) for i, e in enumerate(handler.handlers.dispatch[e_type])]
+                    debug.write(repr(types))
+                    for i, e in typed:
+                        if handler.handlers.dispatch[e_type][i] == self.loaded[name]['events'][sid][1]:
+                            del handler.handlers.dispatch[e_type][i]
 
-        # Remove command handlers
-        c = self.commands
-        for command in c.keys():
-            if c[command]['module'] == name:
-                del self.commands[command]
+            # Remove command handlers
+            commands = [(i, e) for i, e in enumerate(self.commands)]
+            for index, command in commands:
+                if self.commands[command]['module'] == name:
+                    del self.commands[command]
 
-        del self.loaded[name]
+            del self.loaded[name]
+
+        except Exception as e:
+            debug.exception("Exception while unloading module '{}'.".format(name), e)
+            raise
