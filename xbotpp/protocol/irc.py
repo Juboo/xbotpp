@@ -4,6 +4,7 @@ import xbotpp
 import irc.client as irclib_client
 import irc.dict as irclib_dict
 import irc.bot as irclib_bot
+import irc.modes as irclib_modes
 from xbotpp import debug
 from xbotpp import handler
 
