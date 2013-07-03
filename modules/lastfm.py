@@ -9,6 +9,7 @@ import xbotpp
 import xbotpp.modules
 
 def save_user(nick, lastfmuser):
+    xbotpp.load_config()
     xbotpp.config['modules']['lastfm']['users'][nick] = lastfmuser
     xbotpp.save_config()
 
