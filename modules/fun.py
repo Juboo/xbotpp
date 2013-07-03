@@ -8,7 +8,7 @@ import xbotpp.modules
 @xbotpp.modules.on_command('choose')
 def choose(info, args, buf):
     import random
-    args_ = list(set(' '.join([arg.lower() if arg.lower() == 'or' else arg for arg in args[1:]]).split(' or ')))
+    args_ = list(set(' '.join([arg.lower() if arg.lower() == 'or' else arg for arg in args).split(' or ')))
     args__ = list(set([arg.lower() for arg in args_]))
     if len(args_) > 1 and len(args_) == len(args__):
         ans = random.choice([
