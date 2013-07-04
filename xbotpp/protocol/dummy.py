@@ -33,16 +33,16 @@ class dummy:
             if parts[0] in ['privmsg', 'pubmsg', 'notice']:
                 event = handler.event.message(parts[1], parts[2], parts[3], parts[0])
                 handler.handlers.on_message(event)
-            elif parts[0] == "user_join":
 
+            elif parts[0] == "user_join":
                 event = handler.event.user_join(parts[1])
                 handler.handlers.on_user_join(event)
-            elif parts[0] == "user_part":
 
+            elif parts[0] == "user_part":
                 event = handler.event.user_part(parts[1])
                 handler.handlers.on_user_part(event)
-            elif parts[0] == "user_change_nick":
 
+            elif parts[0] == "user_change_nick":
                 event = handler.event.user_change_nick(parts[1], parts[2])
                 handler.handlers.on_user_change_nick(event)
 
