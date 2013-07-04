@@ -220,6 +220,7 @@ class monitor:
             if name in self.loaded:
                 if 'reload' in self.loaded[name]:
                     u = True
+                    debug.write("Module loaded, going to unload it first")
             if u:
                 self.unload(name)
 
@@ -229,9 +230,11 @@ class monitor:
             if module.__xbotpp_module__:
                 if module.__xbotpp_module__ not in self.loaded:
                     # if this module binds events, this will be done already
+                    debug.write("Creating module table")
                     self.create_table(module.__xbotpp_module__)
 
                 self.loaded[module.__xbotpp_module__]['module'] = module
+                debug.write("Loaded {} successfully.".format(module.__xbotpp_module__))
                 return True
             else:
                 raise error.ModuleLoadingException("Not a module: %s" % name)
@@ -254,7 +257,7 @@ class monitor:
         if event.message.startswith(xbotpp.config['bot']['prefix']):            
             message_information = {
                 'source': event.source,
-                'target': event.source if event.type == 'privmsg' else event.target
+                'target': event.source if event.type == 'privmsg' or event.type == 'privnotice' else event.target
             }
 
             debug.write("message_information: {}".format(repr(message_information)))
@@ -262,26 +265,33 @@ class monitor:
             commands = []
             temp = []
             
-            debug.write('starting split')
-            for i in shlex.split(event.message[1:]):
-                debug.write('shlex: {}'.format(i))
-                if i != "|":
-                    debug.write('appending to temp')
-                    temp.append(i)
-                else:
-                    debug.write('temp onto commands')
-                    commands.append(temp)
-                    temp = []
+            try:
+                debug.write('starting split')
+                for i in shlex.split(event.message[1:]):
+                    debug.write('shlex: {}'.format(i))
+                    if i != "|":
+                        debug.write('Appending argument to temp array (currently {})'.format(repr(temp)))
+                        temp.append(i)
+                    else:
+                        debug.write('End of command: {}'.format(repr(temp)))
+                        commands.append(temp)
+                        temp = []
+            except Exception as e:
+                debug.exception("Exception while parsing command", e)
+                xbotpp.state['connection'].send_message(message_information['target'], "Error: {}".format(str(e)))
+                return
 
+            debug.write('End of command: {}'.format(repr(temp)))
             commands.append(temp)
             del temp
-            debug.write('split ended: {}'.format(repr(commands)))
+
+            debug.write('Command sequence: {}'.format(repr(commands)))
             
             buf = ""
 
             for br in commands:
                 if br[0] in self.commands:
-                    debug.write('command {0} found, privlevel {1}'.format(br[0], self.commands[br[0]]['privlevel']))
+                    debug.write('Command {0} found, privlevel {1}'.format(br[0], self.commands[br[0]]['privlevel']))
 
                     if self.commands[br[0]]['privlevel'] >= 1:
                         if message_information['source'] != xbotpp.config['bot']['owner']:
@@ -292,14 +302,20 @@ class monitor:
                         message_information['command_name'] = br[0]
                         buf = self.commands[br[0]]['function'](message_information, br[1:], buf)
                     except Exception as e:
+                        debug.exception("Exception while handling command {}".format(br[0]), e)
                         buf = "Exception in {0}: {1}".format(br[0], e)
-                    debug.write('buf: {}'.format(buf))
+                    debug.write('Buffer: {}'.format(buf))
                 else:
-                    debug.write('command {} not found'.format(br[0]))
+                    debug.write('Command {} not found'.format(br[0]))
                     return
             
-            for line in buf.split('\n'):
-                xbotpp.state['connection'].send_message(message_information['target'], line)
+            try:
+                for line in buf.split('\n'):
+                    xbotpp.state['connection'].send_message(message_information['target'], line)
+            except Exception as e:
+                xbotpp.exception("Exception in writing buffer to target", e)
+                message = "Error [{0}]: {1}".format(e.__class__.__name__, e)
+                xbotpp.state['connection'].send_message(message_information['target'], message)
 
     def unload(self, name):
         '''\
@@ -309,27 +325,32 @@ class monitor:
         '''
 
         if name not in self.loaded:
+            debug.write("Module being unloaded does not exist ({}), raising exception".format(name))
             raise error.ModuleNotLoaded(name)
 
         try:
             # Remove event handlers
             for sid in self.loaded[name]['events']:
-                types = [(i. e) for i, e in enumerate(handler.handlers.dispatch)]
-                debug.write(repr(types))
+                types = [(i, e) for i, e in enumerate(handler.handlers.dispatch)]
                 for e_index, e_type in types:
+                    debug.write("Loop: Checking type {}".format(e_type))
                     typed = [(i, e) for i, e in enumerate(handler.handlers.dispatch[e_type])]
-                    debug.write(repr(types))
                     for i, e in typed:
+                        debug.write("Loop: handler {0} in type {1}".format(str(handler.handlers.dispatch[e_type][i]), e_type))
                         if handler.handlers.dispatch[e_type][i] == self.loaded[name]['events'][sid][1]:
+                            debug.write("Removing event handler {0} ({1})".format(sid, self.loaded[name]['events'][sid][0]))
                             del handler.handlers.dispatch[e_type][i]
 
             # Remove command handlers
             commands = [(i, e) for i, e in enumerate(self.commands)]
             for index, command in commands:
                 if self.commands[command]['module'] == name:
+                    debug.write("Removing command {}".format(command))
                     del self.commands[command]
 
             del self.loaded[name]
+
+            debug.write("Unloaded {} successfully.".format(name))
 
         except Exception as e:
             debug.exception("Exception while unloading module '{}'.".format(name), e)
