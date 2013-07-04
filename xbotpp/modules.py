@@ -313,7 +313,7 @@ class monitor:
                 for line in buf.split('\n'):
                     xbotpp.state['connection'].send_message(message_information['target'], line)
             except Exception as e:
-                xbotpp.exception("Exception in writing buffer to target", e)
+                debug.exception("Exception in writing buffer to target", e)
                 message = "Error [{0}]: {1}".format(e.__class__.__name__, e)
                 xbotpp.state['connection'].send_message(message_information['target'], message)
 
