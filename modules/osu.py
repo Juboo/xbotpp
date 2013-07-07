@@ -121,12 +121,13 @@ def osu_command(info, args, buf):
     if not data:
         return "osu: Not configured."
 
-    formatstr = "{mode} stats for {user}: #{rank}, Level {level}, ranked score {ranked}, {plays} plays, {accuracy}% accuracy"
+    formatstr = "{mode} stats for {user}: #{rank}, Level {level} ({level_percent}%), ranked score {ranked}, {plays} plays, {accuracy}% accuracy"
     formatdata = {
         'mode': gamemodes[gamemode],
         'user': data['username'],
         'rank': data['pp_rank'],
         'level': int(float(data['level'])),
+        'level_percent': (1 * float('0.{}'.format(data['level'].split('.')[1]))) * 100,
         'ranked': data['ranked_score'],
         'plays': data['playcount'],
         'accuracy': "{0:.2f}".format(float(data['accuracy'])),
