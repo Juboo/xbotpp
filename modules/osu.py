@@ -16,6 +16,15 @@ gamemodes = {
     3: 'osu!mania',
 }
 
+def save_user(nick, username):
+    xbotpp.load_config()
+    # create empty users array if it doesn't exist
+    if not 'users' in xbotpp.config['modules']['osu']:
+        xbotpp.debug.write('Creating osu! users dictionary')
+        xbotpp.config['modules']['osu']['users'] = {}
+    xbotpp.config['modules']['osu']['users'][nick] = username
+    xbotpp.save_config()
+
 def get_stats(user, mode=0):
     '''\
     Get statistics for a given user from the osu! API.
@@ -63,6 +72,11 @@ def get_stats(user, mode=0):
 
 @xbotpp.modules.on_command('osu')
 def osu_command(info, args, buf):
+    # create empty users array if it doesn't exist
+    if not 'users' in xbotpp.config['modules']['osu']:
+        xbotpp.debug.write('Creating osu! users dictionary')
+        xbotpp.config['modules']['osu']['users'] = {}
+
     # mode number to get info for. default is 0 which is osu!, and this will be
     # changed by the arguments if-block below if it needs to be
     gamemode = 0
@@ -79,13 +93,27 @@ def osu_command(info, args, buf):
             gamemode = 3
             args = args[1:]
 
+    xbotpp.debug.write('osu! gamemode: {}'.format(gamemodes[gamemode]))
+
+    # determine username
+    if len(args) is not 0:
+        user = ' '.join(args)
+        xbotpp.debug.write('User: {0} (saving for nick {1})'.format(user, repr(info['source'])))
+        save_user(info['source'], user)
+    elif info['source'] in xbotpp.config['modules']['osu']['users']:
+        user = xbotpp.config['modules']['osu']['users'][info['source']]
+        xbotpp.debug.write('User: {0} from users[{1}]'.format(user, repr(info['source'])))
+    elif not info['source'] in xbotpp.config['modules']['osu']['users'] and len(args) is 0:
+        xbotpp.debug.write('No stored username for nick {}'.format(repr(info['source'])))
+        return "I don't know your osu! username, {}!".format(info['source'])
+
     # get the info
     try:
-        data = get_stats(' '.join(args), gamemode)
+        data = get_stats(user, gamemode)
     except KeyError:
         return "osu: Invalid mode."
     except IndexError:
-        return "No data for user {}.".format(' '.join(args))
+        return "No data for user {}.".format(user)
     except:
         # send this up the chain if something weird happened
         raise
@@ -93,13 +121,14 @@ def osu_command(info, args, buf):
     if not data:
         return "osu: Not configured."
 
-    formatstr = "{mode} stats for {user}: Level {level}, ranked score {ranked}, {plays} plays, {accuracy}% accuracy"
+    formatstr = "{mode} stats for {user}: #{rank}, Level {level}, ranked score {ranked}, {plays} plays, {accuracy}% accuracy"
     formatdata = {
         'mode': gamemodes[gamemode],
         'user': data['username'],
+        'rank': data['pp_rank'],
         'level': int(float(data['level'])),
-        'ranked': int(data['ranked_score']),
-        'plays': int(data['playcount']),
+        'ranked': data['ranked_score'],
+        'plays': data['playcount'],
         'accuracy': "{0:.2f}".format(float(data['accuracy'])),
     }
 
