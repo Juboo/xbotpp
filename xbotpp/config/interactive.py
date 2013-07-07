@@ -5,7 +5,10 @@ import re
 import sys
 import json
 import argparse
-import readline
+try:
+    import readline
+except:
+    print("!! Failed to import readline, you may not be able to use the arrow keys when editing.")
 
 '''Interactive utility to create an xbot++ config.'''
 
@@ -116,7 +119,7 @@ def main(options=None):
         while channels_done == False:
             channel = input('Channel to join to on connect: ')
             if channel != '':
-                newconf['networks'][networkname]['channels'].append(host)
+                newconf['networks'][networkname]['channels'].append(channel)
 
                 if input('Add another channel [y/N]? ').lower() != 'y':
                     channels_done = True
