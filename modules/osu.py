@@ -127,7 +127,7 @@ def osu_command(info, args, buf):
         'user': data['username'],
         'rank': data['pp_rank'],
         'level': int(float(data['level'])),
-        'level_percent': (1 * float('0.{}'.format(data['level'].split('.')[1]))) * 100,
+        'level_percent': float('0.{}'.format(data['level'].split('.')[1])) * 100,
         'ranked': data['ranked_score'],
         'plays': data['playcount'],
         'accuracy': "{0:.2f}".format(float(data['accuracy'])),
