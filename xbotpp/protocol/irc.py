@@ -4,6 +4,7 @@ import xbotpp
 import irc.client as irclib_client
 import irc.dict as irclib_dict
 import irc.bot as irclib_bot
+import irc.buffer as irclib_buffer
 import irc.modes as irclib_modes
 from xbotpp import debug
 from xbotpp import handler
@@ -76,6 +77,10 @@ class irc(irclib_client.SimpleIRCClient):
 
         for event in ['privmsg', 'pubmsg', 'privnotice', 'pubnotice']:
             self.connection.add_global_handler(event, self.generic_message, -20)
+
+        LineBuffer = irclib_buffer.DecodingLineBuffer
+        LineBuffer.errors = 'replace'
+        self.connection.buffer_class = LineBuffer
 
     def _connect(self):
         server = self.hosts[0]
