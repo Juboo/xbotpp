@@ -5,7 +5,7 @@ python:
 install:
     - "pip install ."
 script:
-    - "nosetests -vw tests/xbotpp/"
+    - "python setup.py nosetests"
 notifications:
     email: false
     webhooks:

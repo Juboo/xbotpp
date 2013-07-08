@@ -50,10 +50,8 @@ class test_irc(unittest.TestCase):
             },
         })
 
-        xbotpp.state = xbotpp.ptr()
-        xbotpp.state.obj_set({
-            'network': 'localhost',
-        })
+        xbotpp.state = xbotpp.util.classes.EmptyClass()
+        xbotpp.state.network = 'localhost'
 
         self.irc = xbotpp.protocol.irc.irc()
 
@@ -65,7 +63,7 @@ class test_irc(unittest.TestCase):
 
     def test_irc_realname_is_bot_owner(self):
         assert self.irc._realname == xbotpp.config['bot']['owner']
-        
+
     def test_irc_hosts_are_serverspec_objects(self):
         for host in self.irc.hosts:
             assert isinstance(host, xbotpp.protocol.irc.ServerSpec)
