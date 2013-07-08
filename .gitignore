@@ -4,3 +4,5 @@ xbotpp.conf
 *.sublime-*
 *.egg-info
 *.json
+dist/
+build/
