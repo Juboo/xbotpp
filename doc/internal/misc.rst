@@ -1,16 +1,14 @@
 Miscellaneous things
 ====================
 
-xbotpp.ptr
-----------
-
-.. automodule:: xbotpp.ptr
-   
-   .. autoclass:: xbotpp.ptr.ptr
-      :members:
-
 xbotpp.util
 -----------
 
 .. automodule:: xbotpp.util
+   :members:
+
+xbotpp.util.classes
+-------------------
+
+.. automodule:: xbotpp.util.classes
    :members:
