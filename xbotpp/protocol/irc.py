@@ -51,7 +51,7 @@ class irc(irclib_client.SimpleIRCClient):
 
         debug.write('Initialized IRC protocol library.', debug.levels.Info)
 
-        self.network = xbotpp.config['networks'][xbotpp.state['network']]
+        self.network = xbotpp.config['networks'][xbotpp.state.network]
         self.channels = irclib_dict.IRCDict()
         self._nickname = self.network['nick']
         self._realname = xbotpp.config['bot']['owner']

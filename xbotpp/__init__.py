@@ -6,13 +6,14 @@ import sys
 import json
 import inspect
 import argparse
-from xbotpp.ptr import ptr
-from xbotpp import debug
-from xbotpp import util
+import xbotpp.debug
+import xbotpp.util
+import xbotpp.util.classes
 
-__version__ = 'v0.3.0'
-config = ptr()
-state = ptr()
+
+__version__ = 'v0.3.1'
+config = xbotpp.util.classes.ptr()
+state = xbotpp.util.classes.EmptyClass()
 
 def parse_args(args=None):
     '''Parse the arguments to the bot.'''
@@ -35,39 +36,39 @@ def main():
 def set_debug(e=True):
     '''Enable or disable debugging mode.'''
 
-    debug.print_flagged = e
-    debug.write('Debugging information has been %s.' % 'enabled' if e else 'disabled', debug.levels.Info)
+    xbotpp.debug.print_flagged = e
+    xbotpp.debug.write('Debugging information has been %s.' % 'enabled' if e else 'disabled', xbotpp.debug.levels.Info)
 
 def save_config():
-    fh = open(state['configfile'], 'w+')
+    fh = open(state.configfile, 'w+')
     json.dump(config.obj_get(), fh, indent=4, separators=(',', ': '), sort_keys=True)
     fh.close()
 
 def load_config():
-    config.obj_set(json.load(open(state['configfile'], 'r')))
+    config.obj_set(json.load(open(state.configfile, 'r')))
 
 def init(options):
     '''Initialize the bot and load our configuration.'''
 
-    from xbotpp import handler
-    from xbotpp import modules
-    from xbotpp import protocol
+    import xbotpp.handler
+    import xbotpp.modules
+    import xbotpp.protocol
 
-    debug.write('Entered init().')
+    xbotpp.debug.write('Entered init().')
 
     if os.path.exists(options.config):
         try:
-            state['configfile'] = options.config
+            state.configfile = options.config
             load_config()
 
             if not 'networks' in config:
-                debug.write('No \'networks\' section in config.', debug.levels.Error)
+                xbotpp.debug.write('No \'networks\' section in config.', xbotpp.debug.levels.Error)
                 raise SystemExit(1)
 
-            debug.write('Initialized config.', debug.levels.Info)
+            xbotpp.debug.write('Initialized config.', xbotpp.debug.levels.Info)
 
         except Exception as e:
-            debug.exception('Failed to initialize config.', e)
+            xbotpp.debug.exception('Failed to initialize config.', e)
             raise SystemExit(1)
 
     else:
@@ -77,31 +78,31 @@ def init(options):
         Please use the xbotpp-setup utility to create a configuration,
         or xbotpp-migrate to migrate a pre-v0.3.x config.'''
 
-        debug.write(message.format(options.config), debug.levels.Error)
+        xbotpp.debug.write(message.format(options.config), xbotpp.debug.levels.Error)
         raise SystemExit(1)
 
     # Select network
     if options.network in config['networks']:
-        state['network'] = options.network
-        debug.write("Network: %s" % state['network'], debug.levels.Info)
+        state.network = options.network
+        xbotpp.debug.write("Network: %s" % state.network, xbotpp.debug.levels.Info)
     else:
-        debug.write('Unknown network.', debug.levels.Error)
+        xbotpp.debug.write('Unknown network.', xbotpp.debug.levels.Error)
         raise SystemExit(2)
 
     # Set up module monitor
-    state['modules_monitor'] = modules.monitor()
-    state['modules_monitor'].load_init()
+    state.modules = modules.monitor()
+    state.modules.load_init()
 
     # Set up our protocol library
-    p = config['networks'][state['network']]['protocol']
+    p = config['networks'][state.network]['protocol']
     if p in dir(protocol):
-        state['connection'] = eval('protocol.%s.%s' % (p, p))()
+        state.connection = eval('protocol.%s.%s' % (p, p))()
     else:
-        debug.write('''Protocol handler for network not found (network protocol: '%s')''' % p, debug.levels.Error)
+        xbotpp.debug.write('''Protocol handler for network not found (network protocol: '%s')''' % p, xbotpp.debug.levels.Error)
         raise SystemExit(2)
 
     # and start
-    state['connection'].start()
+    state.connection.start()
 
     # when we escape from that, save our config
     save_config()    

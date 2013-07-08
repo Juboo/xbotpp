@@ -49,9 +49,9 @@ def on_event(event):
         # compare __name__ against parent module's existing event handlers
         # going on the assumption the module won't have two identically
         # named event handlers - which is a sane assumption to make...
-        if parent in xbotpp.state['modules_monitor'].loaded:
-            for function in xbotpp.state['modules_monitor'].loaded[parent]['events']:
-                if xbotpp.state['modules_monitor'].loaded[parent]['events'][function][0] == getattr(r, '__name__', None):
+        if parent in xbotpp.state.modules.loaded:
+            for function in xbotpp.state.modules.loaded[parent]['events']:
+                if xbotpp.state.modules.loaded[parent]['events'][function][0] == getattr(r, '__name__', None):
                     # we're the same, so bail
                     sa = "on_event: Already been called on handler with name {0} from module {1}."
                     debug.write(sa.format(getattr(r, '__name__', None), parent))
@@ -68,9 +68,9 @@ def on_event(event):
         handler.handlers.bind_event(event, r)
 
         # and put it in it's parent module table
-        if parent not in xbotpp.state['modules_monitor'].loaded:
-            xbotpp.state['modules_monitor'].create_table(parent)
-        xbotpp.state['modules_monitor'].loaded[parent]['events'][sid] = (getattr(r, '__name__', None), r)
+        if parent not in xbotpp.state.modules.loaded:
+            xbotpp.state.modules.create_table(parent)
+        xbotpp.state.modules.loaded[parent]['events'][sid] = (getattr(r, '__name__', None), r)
 
         return r
 
@@ -105,7 +105,7 @@ def on_command(command, privlevel=0):
     '''
 
     def constructor(r):
-        xbotpp.state['modules_monitor'].bind_command(command, privlevel, r)
+        xbotpp.state.modules.bind_command(command, privlevel, r)
         return r
     return constructor
 
@@ -278,7 +278,7 @@ class monitor:
                         temp = []
             except Exception as e:
                 debug.exception("Exception while parsing command", e)
-                xbotpp.state['connection'].send_message(message_information['target'], "Error: {}".format(str(e)))
+                xbotpp.state.connection.send_message(message_information['target'], "Error: {}".format(str(e)))
                 return
 
             debug.write('End of command: {}'.format(repr(temp)))
@@ -311,11 +311,11 @@ class monitor:
             
             try:
                 for line in buf.split('\n'):
-                    xbotpp.state['connection'].send_message(message_information['target'], line)
+                    xbotpp.state.connection.send_message(message_information['target'], line)
             except Exception as e:
                 debug.exception("Exception in writing buffer to target", e)
                 message = "Error [{0}]: {1}".format(e.__class__.__name__, e)
-                xbotpp.state['connection'].send_message(message_information['target'], message)
+                xbotpp.state.connection.send_message(message_information['target'], message)
 
     def unload(self, name):
         '''\

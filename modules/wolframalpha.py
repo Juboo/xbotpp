@@ -115,7 +115,7 @@ def get_result(query):
     result = parse_result(lxml.etree.parse(response))
     result = "\n".join(result).strip()
     result = result.replace('\\:', '\\u')
-    result = result.replace("Wolfram|Alpha", xbotpp.state['connection'].get_nickname())
+    result = result.replace("Wolfram|Alpha", xbotpp.state.connection.get_nickname())
     result = result.replace("Stephen Wolfram", "Aki Jenkinson")
 
     return result

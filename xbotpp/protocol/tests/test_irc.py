@@ -5,7 +5,7 @@ import unittest
 import xbotpp
 import xbotpp.protocol.irc
 import xbotpp.debug
-import xbotpp.ptr
+import xbotpp.util.classes
 
 
 class test_irc_serverspec(unittest.TestCase):
@@ -29,7 +29,7 @@ class test_irc(unittest.TestCase):
     def setUp(self):
         xbotpp.debug.permanent_silence()
 
-        xbotpp.config = xbotpp.ptr()
+        xbotpp.config = xbotpp.util.classes.ptr()
         xbotpp.config.obj_set({
             'bot': {
                 'prefix': '!',

@@ -4,21 +4,19 @@ import nose
 import unittest
 import xbotpp
 import xbotpp.util
+import xbotpp.util.classes
 import xbotpp.handler
 import xbotpp.modules
 
 
 __xbotpp_module__ = "test_events"
 
-class Namespace: 
-    pass
-
 class test_events(unittest.TestCase):
     '''Test the event handling functions of xbot++.'''
 
     def setUp(self):
-        xbotpp.state = xbotpp.ptr()
-        xbotpp.state['modules_monitor'] = xbotpp.modules.monitor()
+        xbotpp.state = xbotpp.util.classes.ptr()
+        xbotpp.state.modules = xbotpp.modules.monitor()
 
     def test_add_invalid_event_raises_exception(self):
         with self.assertRaises(xbotpp.handler.handlers.EventNotFound):
@@ -28,7 +26,7 @@ class test_events(unittest.TestCase):
         xbotpp.handler.handlers.bind_event('message', lambda x: x)
 
     def test_send_event(self):
-        a = Namespace()
+        a = xbotpp.util.classes.EmptyClass()
 
         a.b = False
         def handler(revent):
@@ -46,7 +44,7 @@ class test_events(unittest.TestCase):
             assert one == two, 'Event %s was not what was sent (got \'%s\', expected \'%s\')' % (t, one, two)
 
     def test_bind_event_with_decorator(self):
-        a = Namespace()
+        a = xbotpp.util.classes.EmptyClass()
         a.b = False
 
         @xbotpp.modules.on_event('message')
@@ -64,7 +62,7 @@ class test_events(unittest.TestCase):
             assert one == two, 'Event %s was not what was sent (got \'%s\', expected \'%s\')' % (t, one, two)
 
     def test_multiple_fired_events(self):
-        a = Namespace()
+        a = xbotpp.util.classes.EmptyClass()
         a.b = []
 
         for i in range(0, 10):

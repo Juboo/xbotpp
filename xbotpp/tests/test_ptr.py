@@ -2,19 +2,19 @@
 
 import nose
 import unittest
-import xbotpp.ptr
+import xbotpp.util.classes
 
 
 class test_ptr(unittest.TestCase):
     '''Test that fancy dictionary thing.'''
 
     def setUp(self):
-        self.ptr = xbotpp.ptr()
+        self.ptr = xbotpp.util.classes.ptr()
         self.obj = {'one': 1, 'two': 2, 'three': 3}
         self.ptr.obj_set(self.obj)
 
     def test_ptr_isinstance(self):
-        assert isinstance(self.ptr, xbotpp.ptr)
+        assert isinstance(self.ptr, xbotpp.util.classes.ptr)
 
     def test_ptr_keys_are_equal(self):
         assert self.ptr.keys() == self.obj.keys()

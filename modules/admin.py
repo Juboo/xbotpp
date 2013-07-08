@@ -22,9 +22,9 @@ def reload_command(info, args, buf):
 
     for module in args:
         try:
-            if module in xbotpp.state['modules_monitor'].loaded:
-                xbotpp.state['modules_monitor'].loaded[module]['reload'] = True
-            xbotpp.state['modules_monitor'].load(module)
+            if module in xbotpp.state.modules.loaded:
+                xbotpp.state.modules.loaded[module]['reload'] = True
+            xbotpp.state.modules.load(module)
             loaded += 1
         except xbotpp.modules.error.ModuleLoadingException:
             failed.append(module)
@@ -43,7 +43,7 @@ def unload_command(info, args, buf):
 
     for module in args:
         try:
-            xbotpp.state['modules_monitor'].unload(module)
+            xbotpp.state.modules.unload(module)
             loaded += 1
         except:
             failed.append(module)
@@ -58,15 +58,15 @@ def modlist_command(info, args, buf):
     """
 
     b = []
-    for mod in xbotpp.state['modules_monitor'].loaded:
+    for mod in xbotpp.state.modules.loaded:
         sidlist = []
-        for sid in xbotpp.state['modules_monitor'].loaded[mod]['events']:
-            event = getattr(xbotpp.state['modules_monitor'].loaded[mod]['events'][sid][1], '__xbotpp_event__', None)
-            sidlist.append("{0} [{1}, {2}]".format(sid, xbotpp.state['modules_monitor'].loaded[mod]['events'][sid][0], event))
+        for sid in xbotpp.state.modules.loaded[mod]['events']:
+            event = getattr(xbotpp.state.modules.loaded[mod]['events'][sid][1], '__xbotpp_event__', None)
+            sidlist.append("{0} [{1}, {2}]".format(sid, xbotpp.state.modules.loaded[mod]['events'][sid][0], event))
 
         commandlist = []
-        for command in xbotpp.state['modules_monitor'].commands:
-            if xbotpp.state['modules_monitor'].commands[command]['module'] == mod:
+        for command in xbotpp.state.modules.commands:
+            if xbotpp.state.modules.commands[command]['module'] == mod:
                 commandlist.append(command)
 
         sid = ", ".join(sidlist) if sidlist != [] else 'none'

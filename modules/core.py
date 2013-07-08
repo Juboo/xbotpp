@@ -2,6 +2,7 @@
 __xbotpp_module__ = "core"
 
 import sys
+import platform
 import xbotpp.debug
 import xbotpp.modules
 
@@ -18,8 +19,8 @@ def info(info, args, buf):
     """
 
     infostr = " ".join([
-        "I'm {nick}, running xbot++ {version} on Python {pyver},",
-        "with {num_modules} module{module_plural} and",
+        "I'm {nick}, running xbot++ {version} on {platform} under",
+        "Python {pyver}, with {num_modules} module{module_plural} and",
         "{num_event_handlers} event handler{event_plural} registered."
     ])
 
@@ -29,13 +30,14 @@ def info(info, args, buf):
         ev += len(xbotpp.handler.handlers.dispatch[b])
 
     formatters = {
-        'nick': xbotpp.state['connection'].get_nickname(),
+        'nick': xbotpp.state.connection.get_nickname(),
         'version': xbotpp.__version__,
-        'num_modules': len(xbotpp.state['modules_monitor'].loaded),
-        'module_plural': '' if len(xbotpp.state['modules_monitor'].loaded) is 1 else 's',
+        'platform': platform.platform(terse=True),
+        'num_modules': len(xbotpp.state.modules.loaded),
+        'module_plural': '' if len(xbotpp.state.modules.loaded) is 1 else 's',
         'num_event_handlers': ev,
         'event_plural': '' if ev is 1 else 's',
-        'pyver': '{0} {1}'.format(".".join([str(s) for s in sys.version_info[0:3]]), sys.version_info[3]),
+        'pyver': '{0} {1}'.format(".".join([str(s) for s in platform.python_version_tuple()]), sys.version_info[3]),
     }
 
     return infostr.format(**formatters)
@@ -52,8 +54,8 @@ def command_list(info, args, buf):
         level = 0
 
     b = []
-    for s in xbotpp.state['modules_monitor'].commands:
-        if xbotpp.state['modules_monitor'].commands[s]['privlevel'] <= level:
+    for s in xbotpp.state.modules.commands:
+        if xbotpp.state.modules.commands[s]['privlevel'] <= level:
             b.append(s)
 
     return "Available commands: {}".format(", ".join(b))
