@@ -332,6 +332,9 @@ class monitor:
             debug.write("Module being unloaded does not exist ({}), raising exception".format(name))
             raise error.ModuleNotLoaded(name)
 
+        if name in self.moddata:
+            del self.moddata[name]
+
         try:
             # Remove event handlers
             for sid in self.loaded[name]['events']:
