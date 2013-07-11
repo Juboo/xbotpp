@@ -114,7 +114,7 @@ class error:
     Exceptions thrown by the module routines.
     '''
 
-    class ModuleNotLoaded(BaseException):
+    class ModuleNotLoaded(Exception):
         '''\
         The module `name` does not exist.
         '''
@@ -125,7 +125,7 @@ class error:
         def __str__(self):
             return self.name
 
-    class ModuleLoadingException(BaseException):
+    class ModuleLoadingException(Exception):
         '''\
         An error occurred loading a module. More details may or may not be
         found in `innerexception`.
