@@ -24,7 +24,18 @@ If you want a stable build, and don't plan to develop your own modules, grab the
 
 ## INSTALL
 
-    $ pip install xbotpp
+    $ git clone https://github.com/aki--aki/xbotpp.git
+    $ cd xbotpp
+    $ pip install .
+    
+    or
+    
+    $ git clone https://github.com/aki--aki/xbotpp.git
+    $ cd xbotpp
+    $ python setup.py install
+    
+    then
+    
     $ xbotpp-config
     $ xbotpp
 
