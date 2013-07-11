@@ -87,7 +87,7 @@ def on_command(command, privlevel=0):
     Privilege levels can be set with the `privlevel` argument to the constructor:
 
     >>> @xbotpp.modules.on_command('admincommand', 1)
-    ... def admit_command_handler(info, args, buf):
+    ... def admin_command_handler(info, args, buf):
     ...     return 'Woo, admin command!'
 
     Running this looks like the following:
