@@ -17,13 +17,7 @@ gamemodes = {
 }
 
 def save_user(nick, username):
-    xbotpp.load_config()
-    # create empty users array if it doesn't exist
-    if not 'users' in xbotpp.config['modules']['osu']:
-        xbotpp.debug.write('Creating osu! users dictionary')
-        xbotpp.config['modules']['osu']['users'] = {}
-    xbotpp.config['modules']['osu']['users'][nick] = username
-    xbotpp.save_config()
+    xbotpp.state.modules.moddata['osu'][nick] = username
 
 def get_stats(user, mode=0):
     '''\
@@ -72,11 +66,6 @@ def get_stats(user, mode=0):
 
 @xbotpp.modules.on_command('osu')
 def osu_command(info, args, buf):
-    # create empty users array if it doesn't exist
-    if not 'users' in xbotpp.config['modules']['osu']:
-        xbotpp.debug.write('Creating osu! users dictionary')
-        xbotpp.config['modules']['osu']['users'] = {}
-
     # mode number to get info for. default is 0 which is osu!, and this will be
     # changed by the arguments if-block below if it needs to be
     gamemode = 0
@@ -100,10 +89,10 @@ def osu_command(info, args, buf):
         user = ' '.join(args)
         xbotpp.debug.write('User: {0} (saving for nick {1})'.format(user, repr(info['source'])))
         save_user(info['source'], user)
-    elif info['source'] in xbotpp.config['modules']['osu']['users']:
-        user = xbotpp.config['modules']['osu']['users'][info['source']]
+    elif info['source'] in xbotpp.state.modules.moddata['osu']:
+        user = xbotpp.state.modules.moddata['osu'][info['source']]
         xbotpp.debug.write('User: {0} from users[{1}]'.format(user, repr(info['source'])))
-    elif not info['source'] in xbotpp.config['modules']['osu']['users'] and len(args) is 0:
+    elif not info['source'] in xbotpp.state.modules.moddata['osu'] and len(args) is 0:
         xbotpp.debug.write('No stored username for nick {}'.format(repr(info['source'])))
         return "I don't know your osu! username, {}!".format(info['source'])
 

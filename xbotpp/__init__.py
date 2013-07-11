@@ -5,6 +5,7 @@ import re
 import sys
 import json
 import inspect
+import importlib
 import argparse
 import xbotpp.debug
 import xbotpp.util
@@ -14,6 +15,9 @@ import xbotpp.util.classes
 __version__ = 'v0.3.1'
 config = xbotpp.util.classes.ptr()
 state = xbotpp.util.classes.EmptyClass()
+vendor = xbotpp.util.classes.EmptyClass()
+vendor_modules = ['sqliteshelf']
+
 
 def parse_args(args=None):
     '''Parse the arguments to the bot.'''
@@ -56,6 +60,17 @@ def init(options):
 
     xbotpp.debug.write('Entered init().')
 
+    state.path = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
+    xbotpp.debug.write('Script directory: {}'.format(repr(state.path).replace('\\\\', '\\')))
+
+    xbotpp.debug.write('Importing vendor modules...')
+    for mod in vendor_modules:
+        path = os.path.join(state.path, 'vendor', mod)
+        sys.path.insert(0, path)
+        setattr(xbotpp.vendor, mod, importlib.import_module(mod))
+        xbotpp.debug.write('{}: okay'.format(mod))
+
+    xbotpp.debug.write('Loading config...')
     if os.path.exists(options.config):
         try:
             state.configfile = options.config

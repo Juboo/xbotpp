@@ -9,9 +9,7 @@ import xbotpp
 import xbotpp.modules
 
 def save_user(nick, lastfmuser):
-    xbotpp.load_config()
-    xbotpp.config['modules']['lastfm']['users'][nick] = lastfmuser
-    xbotpp.save_config()
+    xbotpp.state.modules.moddata['lastfm'][nick] = lastfmuser
 
 @xbotpp.modules.on_command('np')
 def nowplaying(info, args, buf):
@@ -26,10 +24,8 @@ def nowplaying(info, args, buf):
     To get the now playing track of another user, ^np @<nick> can be used.
     """
 
-    if not 'users' in xbotpp.config['modules']['lastfm']:
-        xbotpp.config['modules']['lastfm']['users'] = {}        
-
-    users = xbotpp.config['modules']['lastfm']['users']
+    users = xbotpp.state.modules.moddata['lastfm']
+    xbotpp.debug.write(repr(users))
     searchusers = {}
 
     if buf != "":
@@ -52,7 +48,7 @@ def nowplaying(info, args, buf):
 
     ret = []
 
-    for obj in searchusers:
+    for obj in searchusers.keys():
         res = getlastfm(searchusers[obj])
         if res != None:
             if len(searchusers) is 1:

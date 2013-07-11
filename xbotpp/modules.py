@@ -176,6 +176,9 @@ class monitor:
         #:
         self.commands = {}
 
+        #: Dictionary of SQLiteShelf objects for storage of module data.
+        self.moddata = {}
+
         for path in self.paths:
             sys.path.insert(0, path)
 
@@ -234,6 +237,7 @@ class monitor:
                     self.create_table(module.__xbotpp_module__)
 
                 self.loaded[module.__xbotpp_module__]['module'] = module
+                self.moddata[module.__xbotpp_module__] = xbotpp.vendor.sqliteshelf.SQLiteShelf(xbotpp.config['modules']['data_db'], module.__xbotpp_module__)
                 debug.write("Loaded {} successfully.".format(module.__xbotpp_module__))
                 return True
             else:

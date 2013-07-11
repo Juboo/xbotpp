@@ -9,11 +9,7 @@ import xbotpp
 import xbotpp.modules
 
 def save_user(nick, location):
-    xbotpp.load_config()
-    if not 'users' in xbotpp.config['modules']['weather']:
-        xbotpp.config['modules']['weather']['users'] = {}
-    xbotpp.config['modules']['weather']['users'][nick] = location
-    xbotpp.save_config()
+    xbotpp.state.modules.moddata['weather'][nick] = location
 
 @xbotpp.modules.on_command('we')
 def weather(info, args, buf):
@@ -22,10 +18,7 @@ def weather(info, args, buf):
     that for their next request if that request didn't have a location.
     '''
 
-    if not 'users' in xbotpp.config['modules']['weather']:
-        users = {}
-    else:
-        users = xbotpp.config['modules']['weather']['users']
+    users = xbotpp.state.modules.moddata['weather']
 
     location = ""
 
