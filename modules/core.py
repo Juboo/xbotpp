@@ -10,8 +10,14 @@ import xbotpp.modules
 @xbotpp.modules.on_command('echo')
 def echo(info, args, buf):
     if buf != "":
-        return buf
-    return " ".join(args)
+        r = buf.split()
+    else:
+        r = args
+
+    if r[0] == '/me':
+        return '\x01ACTION {}\x01'.format(' '.join(r[1:]))
+    else:
+        return ' '.join(r)
 
 @xbotpp.modules.on_command('info')
 def info(info, args, buf):
