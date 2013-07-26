@@ -1,5 +1,3 @@
-# vim: noai:ts=4:sw=4:expandtab:syntax=python
-
 import os
 import re
 import sys
@@ -137,6 +135,18 @@ class error:
         def __str__(self):
             return str(self.innerexception)
 
+    class DependencyException(Exception):
+        '''\
+        An error occurred satisfying dependencies for a module.
+        More details may or may not be found in `innerexception`.
+        '''
+
+        def __init__(self, innerexception=None):
+            self.innerexception = innerexception
+
+        def __str__(self):
+            return str(self.innerexception)
+
 class monitor:
     '''\
     The module monitor.
@@ -175,6 +185,9 @@ class monitor:
         #:    }
         #:
         self.commands = {}
+
+        #: List containing the modules that are being loaded in depends().
+        self.depends_stack = []
 
         #: Dictionary of SQLiteShelf objects for storage of module data.
         self.moddata = {}
@@ -362,3 +375,37 @@ class monitor:
         except Exception as e:
             debug.exception("Exception while unloading module '{}'.".format(name), e)
             raise
+
+    def depends(self, caller, deplist):
+        '''\
+        To be called at the top of a module.
+
+        Allows inclusion of dependencies on other modules 
+        (eg. a URL module depending on Open Graph).
+        '''
+
+        if caller in self.depends_stack:
+            text = """depends: Recursive dependencies detected!
+            Being called by {caller}, and is already on the stack.
+            Stack is currently {stack}.""".format(caller=caller, stack=self.depends_stack)
+            debug.write(text, debug.levels.Info)
+            del text
+            return None
+
+        self.depends_stack.insert(0, caller)
+        debug.write("depends: stack is {}".format(repr(self.depends_stack)))
+
+        error = False
+        for module in deplist:
+            if not module in self.loaded:
+                debug.write("depends: {module} (required by {caller}) is being loaded".format(module=module, caller=caller))
+                try:
+                    self.load(module)
+                except:
+                    debug.write("depends: couldn't load dep {module} (required by {caller})".format(module=module, caller=caller), debug.levels.Error)
+                    ex = error.DependencyException(list(self.depends_stack))
+                    self.depends_stack = []
+                    raise
+
+        debug.write("depends: dependencies for module {caller} satisfied".format(caller=caller))
+        del self.depends_stack[0]

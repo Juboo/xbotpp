@@ -1,4 +1,3 @@
-# vim: noai:ts=4:sw=4:expandtab:syntax=python
 __xbotpp_module__ = "admin"
 
 import xbotpp.debug
@@ -19,6 +18,7 @@ def saveconf_command(info, args, buf):
 def reload_command(info, args, buf):
     loaded = 0
     failed = []
+    returnbuffer = []
 
     for module in args:
         try:
@@ -26,11 +26,13 @@ def reload_command(info, args, buf):
                 xbotpp.state.modules.loaded[module]['reload'] = True
             xbotpp.state.modules.load(module)
             loaded += 1
-        except xbotpp.modules.error.ModuleLoadingException:
+        except xbotpp.modules.error.ModuleLoadingException as e:
             failed.append(module)
+            returnbuffer.append("Loading {m}: {e}".format(m=module, e=e))
 
     failstr = "Failed: " + ", ".join(failed)
-    return "Reloaded {0} of {1} modules. {2}".format(loaded, len(args), failstr if failed != [] else '')
+    returnbuffer.insert(0, "Reloaded {0} of {1} modules. {2}".format(loaded, len(args), failstr if failed != [] else ''))
+    return '\n'.join(returnbuffer)
 
 
 @xbotpp.modules.on_command('unload', 1)

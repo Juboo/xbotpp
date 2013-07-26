@@ -1,5 +1,3 @@
-# vim: noai:ts=4:sw=4:expandtab:syntax=python
-
 import os
 import re
 import sys
@@ -49,6 +47,7 @@ def save_config():
     fh.close()
 
 def load_config():
+    xbotpp.debug.write("Loading config: {}".format(repr(state.configfile)))
     config.obj_set(json.load(open(state.configfile, 'r')))
 
 def init(options):
@@ -73,7 +72,7 @@ def init(options):
     xbotpp.debug.write('Loading config...')
     if os.path.exists(options.config):
         try:
-            state.configfile = options.config
+            state.configfile = os.path.abspath(options.config)
             load_config()
 
             if not 'networks' in config:

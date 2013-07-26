@@ -1,4 +1,3 @@
-# vim: noai:ts=4:sw=4:expandtab:syntax=python
 __xbotpp_module__ = "mishimmie"
 
 import re
@@ -8,6 +7,8 @@ import xbotpp.modules
 import xbotpp.debug
 from lxml import html
 
+xbotpp.state.modules.depends(__xbotpp_module__, ['opengraph'])
+og_register = xbotpp.state.modules.loaded['opengraph']['module'].register
 
 @xbotpp.modules.on_command('mi')
 def search(info, args, buf):
@@ -35,6 +36,11 @@ def search(info, args, buf):
     else:
         return "Usage: %smi <query> -- search the Mishimmie for <query>" % xbotpp.config['bot']['prefix']
 
+@og_register('shimmie\.katawa-shoujo\.com')
+def scan(url):
+    t = miscan(url)
+    if t:
+        return "Mishimmie: \x02{}\x02".format(t['desc'])
 
 def miscan(url):
     """\

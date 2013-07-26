@@ -1,4 +1,3 @@
-# vim: noai:ts=4:sw=4:expandtab:syntax=python
 __xbotpp_module__ = "googleapi"
 
 import json

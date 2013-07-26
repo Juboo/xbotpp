@@ -1,5 +1,3 @@
-# vim: noai:ts=4:sw=4:expandtab:syntax=python
-
 import xbotpp
 import irc.client as irclib_client
 import irc.dict as irclib_dict

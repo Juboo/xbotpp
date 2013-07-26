@@ -1,5 +1,3 @@
-# vim: noai:ts=4:sw=4:expandtab:syntax=python
-
 import sys
 import collections
 from datetime import datetime

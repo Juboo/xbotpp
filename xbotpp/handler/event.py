@@ -1,5 +1,3 @@
-# vim: noai:ts=4:sw=4:expandtab:syntax=python
-
 class generic:
     '''\
     A generic event.
