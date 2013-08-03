@@ -47,3 +47,23 @@ def getquote(num):
 
     return "({num}) {quote}".format(**fmt)
 
+@xbotpp.modules.on_command('addquote')
+def addquote(info, args, buf):
+    if len(args) is 0 and len(buf) is 0:
+        return "Usage: addquote <quote>"
+
+    if not 'qdbs' in xbotpp.config['modules'] and not 'url' in xbotpp.config['modules']['qdbs']:
+        return 'quote: not configured.'
+
+    if len(buf) is 0:
+        buf = " ".join(args)
+
+    data = urllib.parse.urlencode({
+        'quote': buf,
+        'do': 'add',
+    })
+
+    request = urllib.request.Request(xbotpp.config['modules']['qdbs']['url'], bytes(data.encode('utf-8')))
+    result = str(urllib.request.urlopen(request).read(), 'utf-8')
+    doc = lxml.html.document_fromstring(result)
+    return " ".join([s.strip() for s in doc.find_class('title')[0].text_content().split('\n')]).strip()
