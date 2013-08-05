@@ -63,6 +63,13 @@ def get_stats(user, mode=0):
         xbotpp.debug.write(repr(e))
         raise
 
+def metric(num):
+    """Returns user-readable string representing given number."""
+    for metric_raise, metric_char in [[9, 'B'], [6, 'M'], [3, 'k']]:
+        if num > (10 ** metric_raise):
+            return '{:.1f}{}'.format((num / (10 ** metric_raise)), metric_char)
+    return str(num)
+
 @xbotpp.modules.on_command('osu')
 def osu_command(info, args, buf):
     # mode number to get info for. default is 0 which is osu!, and this will be
@@ -109,15 +116,16 @@ def osu_command(info, args, buf):
     if not data:
         return "osu: Not configured."
 
-    formatstr = "{mode} stats for {user}: #{rank}, Level {level} ({level_percent}%), ranked score {ranked}, {plays} plays, {accuracy}% accuracy"
+    formatstr = "{mode} stats for {user}: #{rank} ({pp} pp), Level {level} ({level_percent}%), ranked score {ranked}, {plays} plays, {accuracy}% accuracy"
     formatdata = {
         'mode': gamemodes[gamemode],
         'user': data['username'],
         'rank': data['pp_rank'],
         'level': int(float(data['level'])),
         'level_percent': "{0:.2f}".format(float('0.{}'.format(data['level'].split('.')[1])) * 100),
-        'ranked': data['ranked_score'],
-        'plays': data['playcount'],
+        'pp': data['pp_raw'],
+        'ranked': metric(int(data['ranked_score'])),
+        'plays': metric(int(data['playcount'])),
         'accuracy': "{0:.2f}".format(float(data['accuracy'])),
     }
 
