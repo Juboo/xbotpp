@@ -11,6 +11,7 @@ import xbotpp
 from xbotpp import util
 from xbotpp import debug
 from xbotpp import handler
+from xbotpp import error
 
 
 def on_event(event):
@@ -106,46 +107,6 @@ def on_command(command, privlevel=0):
         xbotpp.state.modules.bind_command(command, privlevel, r)
         return r
     return constructor
-
-class error:
-    '''\
-    Exceptions thrown by the module routines.
-    '''
-
-    class ModuleNotLoaded(Exception):
-        '''\
-        The module `name` does not exist.
-        '''
-
-        def __init__(self, name):
-            self.name = name
-
-        def __str__(self):
-            return self.name
-
-    class ModuleLoadingException(Exception):
-        '''\
-        An error occurred loading a module. More details may or may not be
-        found in `innerexception`.
-        '''
-
-        def __init__(self, innerexception=None):
-            self.innerexception = innerexception
-
-        def __str__(self):
-            return str(self.innerexception)
-
-    class DependencyException(Exception):
-        '''\
-        An error occurred satisfying dependencies for a module.
-        More details may or may not be found in `innerexception`.
-        '''
-
-        def __init__(self, innerexception=None):
-            self.innerexception = innerexception
-
-        def __str__(self):
-            return str(self.innerexception)
 
 class monitor:
     '''\
@@ -283,7 +244,7 @@ class monitor:
             temp = []
 
             try:
-                if event.message[1] == xbotpp.config['bot']['prefix']:
+                if len(event.message) > 1 and event.message[1] == xbotpp.config['bot']['prefix']:
                     debug.write("using shlex to split command")
                     splitfunc = shlex.split
                     messagetosplit = event.message[2:]
@@ -291,6 +252,10 @@ class monitor:
                     debug.write("using str.split to split command")
                     splitfunc = lambda x: x.split(" ")
                     messagetosplit = event.message[1:]
+
+                if len(messagetosplit) is 0:
+                    debug.write('empty message, returning')
+                    return
 
                 debug.write('starting split')
                 for i in splitfunc(messagetosplit):
