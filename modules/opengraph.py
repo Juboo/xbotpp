@@ -91,7 +91,7 @@ def do_og(url):
     conttype = response.info().get_content_type()
     xbotpp.debug.write("Content-Type: %s" % conttype)
     if not re.search("html", conttype):
-        bot._debug("Abort Open Graph scan.")
+        xbotpp.debug.write("Abort Open Graph scan.")
         return None
     
     xbotpp.debug.write("Fetching OpenGraph data...")
