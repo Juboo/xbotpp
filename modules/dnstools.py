@@ -48,9 +48,9 @@ def lookup(info, args, buf):
                 others = " (%s %s)" % (len(addresses), plural) if len(addresses) > 1 else ''
                 return "Address: %s%s" % (addresses[0] if not str(addresses[0]).endswith(".") else str(addresses[0])[:-1], others)
             else:
-                util.answer(bot, "%s: NXDOMAIN" % host)
+                return "%s: NXDOMAIN" % host
         else:
-            answer("Invalid host for this type of lookup.")
+            return "Invalid host for this type of lookup."
     else:
         return "Usage: lookup [-6 (IPv6), -r (rDNS)] <server>"
 
