@@ -281,11 +281,20 @@ class monitor:
 
             commands = []
             temp = []
-            
+
             try:
+                if event.message[1] == xbotpp.config['bot']['prefix']:
+                    debug.write("using shlex to split command")
+                    splitfunc = shlex.split
+                    messagetosplit = event.message[2:]
+                else:
+                    debug.write("using str.split to split command")
+                    splitfunc = lambda x: x.split(" ")
+                    messagetosplit = event.message[1:]
+
                 debug.write('starting split')
-                for i in shlex.split(event.message[1:]):
-                    debug.write('shlex: {}'.format(i))
+                for i in splitfunc(messagetosplit):
+                    debug.write('split: {}'.format(i))
                     if i != "|":
                         debug.write('Appending argument to temp array (currently {})'.format(repr(temp)))
                         temp.append(i)
