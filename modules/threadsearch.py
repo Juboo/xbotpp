@@ -39,7 +39,7 @@ def search(info, args, buf):
 	success, thread = actual_search(b, term, sf)
 
 	if success:
-		tu = "http://boards.4chan.org/{b}/{id}".format(b=b, id=str(thread['no']))
+		tu = "http://boards.4chan.org/{b}/res/{id}".format(b=b, id=str(thread['no']))
 
 		if 'sub' in thread:
 			r = thread['sub']
