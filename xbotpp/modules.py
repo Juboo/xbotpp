@@ -212,6 +212,9 @@ class monitor:
 
                 self.loaded[module.__xbotpp_module__]['module'] = module
                 self.moddata[module.__xbotpp_module__] = xbotpp.vendor.sqliteshelf.SQLiteShelf(xbotpp.config['modules']['data_db'], module.__xbotpp_module__)
+
+                if '_on_load' in dir(module):
+                    module._on_load()
                 debug.write("Loaded {} successfully.".format(module.__xbotpp_module__))
                 return True
             else:
@@ -318,6 +321,12 @@ class monitor:
         if name not in self.loaded:
             debug.write("Module being unloaded does not exist ({}), raising exception".format(name))
             raise error.ModuleNotLoaded(name)
+
+        try:
+            if '_on_unload' in dir(self.loaded[name]['module']):
+                self.loaded[name]['module']._on_unload()
+        except Exception as e:
+            xbotpp.debug.exception("Running module _on_unload(), continuing anyway", e)
 
         if name in self.moddata:
             del self.moddata[name]

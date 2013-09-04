@@ -6,7 +6,7 @@ import xbotpp.debug
 import xbotpp.modules
 import urllib.request
 
-def setup_extras():
+def _on_load():
     '''\
     Initialize the 'extra' search commands specified in the settings.
 
@@ -90,4 +90,3 @@ def search(args):
     else:
         return False
 
-setup_extras()
