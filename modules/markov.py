@@ -26,7 +26,10 @@ def feed(text):
 	stext = [s.strip() for s in text.split()]
 	if len(stext) == 0:
 		return 0
-	
+
+	global threadstarted
+	threadstarted = True
+
 	global threadchain
 	chain = threadchain
 
@@ -48,9 +51,11 @@ def feed(text):
 	threadchain = chain
 	return count
 
-def feed_thread(text):
+def feed_thread(text, report_to_channel=None):
 	global thread
 	global threadchain
+	global threadstarted
+	threadstarted = False
 	threadchain = xbotpp.state.modules.moddata['markov']['chain']
 	thread = threading.Thread(target=feed, kwargs={'text': text})
 	thread.start()
@@ -58,11 +63,14 @@ def feed_thread(text):
 	def check_thread():
 		global thread
 		global threadchain
+		global threadstarted
 		global threadstatuschannel
-		if not thread.is_alive():
+		xbotpp.debug.write('In markov.check_thread()')
+		if thread.is_alive() is False and threadstarted is True:
+			xbotpp.debug.write('Feeding thread finished.')
 			xbotpp.state.modules.moddata['markov']['chain'] = threadchain
-			if threadstatuschannel:
-				xbotpp.state.connection.send_message(threadstatuschannel, "Markov feeding complete.")
+			if report_to_channel:
+				xbotpp.state.connection.send_message(report_to_channel, "Markov feeding complete.")
 		else:
 			xbotpp.state.connection.connection.execute_delayed(1, check_thread)
 
@@ -72,8 +80,6 @@ def feed_thread(text):
 @xbotpp.modules.on_event('message')
 def feed_on_message(event):
 	try:
-		global threadstatuschannel
-		threadstatuschannel = None
 		feed_thread(event.message)
 	except:
 		pass
@@ -92,14 +98,9 @@ def feed_on_message(event):
 
 @xbotpp.modules.on_command('markov-feed', 1)
 def command_feed(info, args, buf):
-	try:
-		with open(" ".join(args), 'r') as f:
-			global threadstatuschannel
-			threadstatuschannel = info.target
-			feed_thread(f.read())
-			return "Started feeding."
-	except:
-		return "Can't feed chain."
+	with open(" ".join(args), 'r') as f:
+		feed_thread(f.read(), info['target'])
+		return "Started feeding."
 
 @xbotpp.modules.on_command('markov-prob', 1)
 def set_prob(info, args, buf):
