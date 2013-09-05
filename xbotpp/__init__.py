@@ -10,7 +10,7 @@ import xbotpp.util
 import xbotpp.util.classes
 
 
-__version__ = 'v0.3.4'
+__version__ = 'v0.3.5'
 config = xbotpp.util.classes.ptr()
 state = xbotpp.util.classes.EmptyClass()
 vendor = xbotpp.util.classes.EmptyClass()
