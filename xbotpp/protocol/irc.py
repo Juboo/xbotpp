@@ -472,6 +472,7 @@ class irc(BaseProtocol):
 		with self.mutex:
 			logging.debug(self.logprefix + '\x1b[1mKICK\x1b[0m')
 			if message.misc[0].lower() == self.nick.lower():
+				logging.info(self.logprefix + 'Kicked from {}, rejoining.'.format(message.target.name))
 				bot.timer.execute_delayed(2, self.join_channel, args=(message.target, True))
 			else:
 				for i, _ in enumerate(message.target.users):
