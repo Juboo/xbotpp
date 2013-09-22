@@ -1,7 +1,6 @@
 import xbotpp
 from xbotpp import bot
 from xbotpp import util
-from xbotpp import info
 from xbotpp import logging
 from xbotpp import abstract
 from .base import BaseProtocol
@@ -526,7 +525,7 @@ class irc(BaseProtocol):
 		assert isinstance(message, IrcMessage)
 
 		with self.mutex:
-			a = info.MessageInformation()
+			a = abstract.MessageInformation()
 			a.source = message.source
 			a.target = message.target
 			a.message = message.trailing

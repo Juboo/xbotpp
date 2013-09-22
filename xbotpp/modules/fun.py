@@ -96,4 +96,4 @@ def buttify(message):
 									if random.random() > 0.3:
 										words[m] = words[m][:-4] + "butt"
 
-					bot.connections[message.network].send_message(message.target, ' '.join(words))
+					message.reply(' '.join(words))

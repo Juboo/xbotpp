@@ -4,7 +4,6 @@ from . import util
 from . import timer
 from . import signal
 from . import abstract
-from . import info
 from . import protocol
 from . import permission
 from . import exceptions
@@ -51,7 +50,7 @@ class Bot:
 			# Construct list of admins
 			self.options.admins = []
 			for admin in self._options['admins']:
-				a = info.Admin(**admin)
+				a = abstract.Admin(**admin)
 				if 'owner' in admin:
 					self.options.owner = a
 				self.options.admins.append(a)
