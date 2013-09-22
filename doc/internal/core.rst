@@ -1,6 +1,0 @@
-Core
-====
-
-.. automodule:: xbotpp
-   :members:
-

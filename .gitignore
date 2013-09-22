@@ -1,9 +1,8 @@
 *.pyc
 *.swp
-xbotpp.conf
 *.sublime-*
 *.egg-info
-*.json
-*.sdb
+*.ya?ml
+*.db/
 dist/
 build/

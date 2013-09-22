@@ -1,0 +1,52 @@
+---
+##########################
+# Example xbot++ config. #
+##########################
+
+# prefix: Command prefix character
+prefix: '!' 
+# admins: List of bot admins. Set the 'owner' property to 'true' on your user.
+# Available properties are: 'nick', 'ident', 'hostname', 'realname'.
+admins:
+ - nick: yournick
+   owner: true
+# modules: modules configuration.
+modules:
+ # db: folder to store module data in. will be created if it doesn't already
+ # exist (but you should always use a new folder). 'data.db' is recommended.
+ db: data.db
+ # autoload: list of modules to load on startup. It's recommended to have at
+ # least 'core' and 'admin' here, so that you can control basic bot functions.
+ # other modules can be loaded at runtime with the 'reload' command, so you can
+ # test module functionality before adding them to the autoload list.
+ autoload:
+  - core
+  - admin
+# networks: networks to connect to
+networks:
+ # Network name
+ stormbit:
+  # protocol: protocol to use. 'irc' for IRC.
+  protocol: irc
+  # nick: nickname to use
+  nick: xbotpp
+  # invite: whether or not to join channels when invited to them (on/off)
+  invite: on
+  # servers: list of servers to connect to. servers can be specified with
+  # no port to connect to them on the protocol default port (usually without
+  # SSL), or specify a port number after a colon to connect to that port.
+  # If the protocol allows it, you can specify a + before the port number to
+  # connect with SSL to the server.
+  servers:
+   - irc.stormbit.net:+6697
+  # channels: list of channels to join
+  channels:
+   - '#xbotpp'
+  # authentication: credentials to use when connecting to the server. this is
+  # protocol-specific, for example, the IRC protocol allows you to specify a
+  # server password as 'server' and a NickServ password as 'nickserv'.
+  # Uncomment this to use it.
+  #authentication:
+   #nickserv: 'yournickservpass'
+   #server: 'yourserverpass'
+

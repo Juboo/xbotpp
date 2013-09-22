@@ -1,122 +1,58 @@
-import os
-import re
-import sys
-import json
-import inspect
-import importlib
-import argparse
-import xbotpp.debug
-import xbotpp.util
-import xbotpp.util.classes
+__hello__ = '''\
+  .,::      .::::::::.      ...   ::::::::::::
+  `;;;,  .,;;  ;;;'';;'  .;;;;;;;.;;;;;;;;''""
+    '[[,,[['   [[[__[[\.,[[     \[[,   [[      [      [
+     Y$$$P     $$""""Y$$$$$,     $$$   $$    $$$$$  $$$$$
+   oP"``"Yo,  _88o,,od8P"888,_ _,88P   88,     8      8
+,m"       "Mm,""YUMMMP"   "YMMMMMP"    MMM
+'''
 
+__version_tuple__ = (0, 4, 0)
+__version_extra__ = "-dev"
+__version__ = ".".join([str(s) for s in __version_tuple__]) + __version_extra__
 
-__version__ = 'v0.3.5'
-config = xbotpp.util.classes.ptr()
-state = xbotpp.util.classes.EmptyClass()
-vendor = xbotpp.util.classes.EmptyClass()
-vendor_modules = ['sqliteshelf']
+from . import logging
+logging.init()
+from . import util
 
+bot = None
 
-def parse_args(args=None):
-    '''Parse the arguments to the bot.'''
+def parse_options():
+	from argparse import ArgumentParser
+	parser = ArgumentParser()
+	parser.add_argument('-c', '--config', help="Configuration file", action="store", dest="config_file", default="config.yml")
+	parser.add_argument('-D', '--debug', help="Enable debugging", action="store_true", dest="debug")
+	args = parser.parse_args()
+	args.__from_parse_options = True
+	return args
 
-    parser = argparse.ArgumentParser(usage='xbotpp [options]')
-    parser.add_argument('-c', '--config', metavar='FILE', help='read configuration from FILE', default='config.json')
-    parser.add_argument('-n', '--network', metavar='NETWORK', help='connect to the network named NETWORK')
-    parser.add_argument("--debug", action='store_true', help="enable debugging information")
-    return parser.parse_args(args)
+def init(options=None):
+	print(__hello__)
+	logging.info('This is xbot++ ' + __version__ + '.')
 
-def main():
-    '''Command-line entry point.'''
+	options = options or parse_options()
 
-    options = parse_args()
-    if options.debug:
-        set_debug()
+	if hasattr(options, 'debug') and options.debug == True:
+		# enable debugging info display
+		logging.setdisplaylevel(0)
+		logging.debug('Debugging information enabled.')
 
-    init(options)
+	try:
+		global bot
+		from ._bot import Bot
+		bot = Bot(options)
+		bot._load_config()
+		bot._load_classes()
 
-def set_debug(e=True):
-    '''Enable or disable debugging mode.'''
+		import signal
+		signal.signal(signal.SIGINT, bot.stop)
+		signal.signal(signal.SIGTERM, bot.stop)
+	except Exception as e:
+		raise
+		#logging.error('An exception occurred while setting up the bot:\n' \
+		#	+ '{}: {}'.format(e.__class__.__name__, str(e)))
+		del bot
+		raise SystemExit(2)
 
-    xbotpp.debug.print_flagged = e
-    xbotpp.debug.write('Debugging information has been %s.' % 'enabled' if e else 'disabled', xbotpp.debug.levels.Info)
-
-def save_config():
-    fh = open(state.configfile, 'w+')
-    json.dump(config.obj_get(), fh, indent=4, separators=(',', ': '), sort_keys=True)
-    fh.close()
-
-def load_config():
-    xbotpp.debug.write("Loading config: {}".format(repr(state.configfile)))
-    config.obj_set(json.load(open(state.configfile, 'r')))
-
-def init(options):
-    '''Initialize the bot and load our configuration.'''
-
-    import xbotpp.handler
-    import xbotpp.modules
-    import xbotpp.protocol
-
-    xbotpp.debug.write('Entered init().')
-
-    state.path = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
-    xbotpp.debug.write('Script directory: {}'.format(repr(state.path).replace('\\\\', '\\')))
-
-    xbotpp.debug.write('Importing vendor modules...')
-    for mod in vendor_modules:
-        path = os.path.join(state.path, 'vendor', mod)
-        sys.path.insert(0, path)
-        setattr(xbotpp.vendor, mod, importlib.import_module(mod))
-        xbotpp.debug.write('{}: okay'.format(mod))
-
-    xbotpp.debug.write('Loading config...')
-    if os.path.exists(options.config):
-        try:
-            state.configfile = os.path.abspath(options.config)
-            load_config()
-
-            if not 'networks' in config:
-                xbotpp.debug.write('No \'networks\' section in config.', xbotpp.debug.levels.Error)
-                raise SystemExit(1)
-
-            xbotpp.debug.write('Initialized config.', xbotpp.debug.levels.Info)
-
-        except Exception as e:
-            xbotpp.debug.exception('Failed to initialize config.', e)
-            raise SystemExit(1)
-
-    else:
-        message = '''\
-        The config file we've been given does not exist.
-        File: "{0}"
-        Please use the xbotpp-setup utility to create a configuration,
-        or xbotpp-migrate to migrate a pre-v0.3.x config.'''
-
-        xbotpp.debug.write(message.format(options.config), xbotpp.debug.levels.Error)
-        raise SystemExit(1)
-
-    # Select network
-    if options.network in config['networks']:
-        state.network = options.network
-        xbotpp.debug.write("Network: %s" % state.network, xbotpp.debug.levels.Info)
-    else:
-        xbotpp.debug.write('Unknown network.', xbotpp.debug.levels.Error)
-        raise SystemExit(2)
-
-    # Set up module monitor
-    state.modules = modules.monitor()
-    state.modules.load_init()
-
-    # Set up our protocol library
-    p = config['networks'][state.network]['protocol']
-    if p in dir(protocol):
-        state.connection = eval('protocol.%s.%s' % (p, p))()
-    else:
-        xbotpp.debug.write('''Protocol handler for network not found (network protocol: '%s')''' % p, xbotpp.debug.levels.Error)
-        raise SystemExit(2)
-
-    # and start
-    state.connection.start()
-
-    # when we escape from that, save our config
-    save_config()    
+	if hasattr(options, '__from_parse_options'):
+		bot.start()

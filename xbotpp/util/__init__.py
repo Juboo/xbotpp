@@ -1,24 +1,42 @@
-import string
-import random
+class Nothing:
+	'''\
+	An empty class.
+	'''
+	
+	pass
 
+class ObjectDict(dict):
+	'''\
+	A dict that has it's *__getattr__* and *__setattr__* methods act as
+	*__getitem__* and *__setitem__*.
+	'''
 
-def change_name(i):
-    '''\
-    Constructor method to change the name to `i`.
-    '''
+	def __getattr__(self, key):
+		return super().__getitem__(key)
 
-    def constructor(r):
-        setattr(r, '__name__', str(i))
-        return r
-    return constructor
+	def __setattr__(self, key, value):
+		super().__setitem__(key, value)
 
-def random_string(size=10, chars=None):
-    '''\
-    Returns a random string of the given size and character set.
+class CaseInsensitiveDict(dict):
+	'''\
+	A dict where item keys are converted to lowercase before getting/setting.
+	'''
 
-    The default character set is ``string.ascii_lowercase + 
-    string.ascii_uppercase + string.digits``.
-    '''
+	def __getitem__(self, key):
+		return super().__getitem__(key.lower())
 
-    chars = chars or string.ascii_lowercase + string.ascii_uppercase + string.digits
-    return ''.join(random.choice(chars) for x in range(size))
+	def __setitem__(self, key, value):
+		super().__setitem__(key.lower(), value)
+
+class CaseInsensitiveObjectDict(CaseInsensitiveDict):
+	'''\
+	A dict that has it's *__getattr__* and *__setattr__* methods act as
+	*__getitem__* and *__setitem__*. This dict converts item keys to lowercase
+	before getting/setting, as it inherits from :class:`.CaseInsensitiveDict`.
+	'''
+
+	def __getattr__(self, key):
+		return super().__getitem__(key)
+
+	def __setattr__(self, key, value):
+		super().__setitem__(key, value)

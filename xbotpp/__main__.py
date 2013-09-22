@@ -1,2 +1,3 @@
-import xbotpp
-xbotpp.main()
+#!/usr/bin/env python3
+from . import init
+init()

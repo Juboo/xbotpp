@@ -1,6 +1,6 @@
 ```    
   .,::      .::::::::.      ...   ::::::::::::         
-  `;;;,  .,;;  ;;;'';;'  .;;;;;;;.;;;;;;;;''''         
+  `;;;,  .,;;  ;;;'';;'  .;;;;;;;.;;;;;;;;""''         
     '[[,,[['   [[[__[[\.,[[     \[[,   [[      [      [   
      Y$$$P     $$""""Y$$$$$,     $$$   $$    $$$$$  $$$$$ 
    oP"``"Yo,  _88o,,od8P"888,_ _,88P   88,     8      8   
@@ -11,37 +11,20 @@
 
 [![Build Status](https://travis-ci.org/aki--aki/xbotpp.png?branch=master)](https://travis-ci.org/aki--aki/xbotpp)
 
-## ATTENTION!
-
-xbot++ v0.3.0 is currently under construction.
-
-If you want a stable build, and don't plan to develop your own modules, grab the 
-[v0.2.13](https://github.com/aki--aki/xbotpp/tree/v0.2.13) tag:
-
-    $ git clone --recursive https://github.com/aki--aki/xbotpp.git
-    $ cd xbotpp
-    $ git checkout v0.2.13
-
 ## INSTALL
 
     $ git clone --recursive https://github.com/aki--aki/xbotpp.git
     $ cd xbotpp
-    $ pip install .
-    
-    or
-    
-    $ git clone https://github.com/aki--aki/xbotpp.git
-    $ cd xbotpp
-    $ python setup.py install
+    $ pip install . # or python setup.py install
     
     then
     
-    $ xbotpp-config
+    $ $EDITOR config.yml
     $ xbotpp
 
-### MIGRATING FROM v0.1.x or v0.2.x
+### MIGRATING FROM PREVIOUS VERSIONS
 
-    $ xbotpp-migrate xbotpp.conf
+TODO: write this
 
 ## DOCUMENTATION
 
@@ -61,3 +44,10 @@ drop in to our IRC channel: **#xbotpp** on irc.stormbit.net.
 Based on work by [Milos Ivanovic](https://github.com/milosivanovic) and [Daniel Oaks](https://github.com/DanielOaks).
 
 See the full list of contributors [here](https://github.com/aki--aki/xbotpp/contributors).
+
+## LICENCE
+
+xbot++ is licenced under the BSD Licence, see the `LICENCE` file for details.
+
+Attributions are also included in the `LICENCE` file.
+

@@ -1,3 +1,0 @@
-[submodule "xbotpp/vendor/sqliteshelf"]
-	path = xbotpp/vendor/sqliteshelf
-	url = https://github.com/shish/sqliteshelf.git
