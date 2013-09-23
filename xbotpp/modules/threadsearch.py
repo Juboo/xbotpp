@@ -20,9 +20,12 @@ def on_url(url):
 	m = re.search(r'boards.4chan.org/(\w+)/res/(\d+)', url)
 	if m:
 		url = "https://api.4chan.org/{0}/res/{1}.json".format(*m.group(1, 2))
+		return get_post(url)
+
+def get_post(url):
 	data = json.loads(str(urllib.request.urlopen(url, timeout=5).read(), 'utf-8'))
 	kw = {
-		'sub': data['posts'][0]['sub'],
+		'sub': data['posts'][0]['sub'] if 'sub' in data['posts'][0] else smart_truncate(data['posts'][0]['com'], 50),
 		'reltime': pretty_date(data['posts'][0]['time']),
 		'replies': str(data['posts'][0]['replies']),
 		'images': str(data['posts'][0]['images']),
@@ -47,13 +50,8 @@ def search(info, args, buf):
 
 	if success:
 		tu = "http://boards.4chan.org/{b}/res/{id}".format(b=b, id=str(thread['no']))
-
-		if 'sub' in thread:
-			r = thread['sub']
-		else:
-			r = thread['com']
-
-		return "{content} - {url}".format(content=smart_truncate(r, length=50), url=tu)
+		url = "https://api.4chan.org/{0}/res/{1}.json".format(b, str(thread['no']))
+		return "{} {}".format(get_post(url), tu)
 	else:
 		return thread
 
