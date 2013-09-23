@@ -505,10 +505,10 @@ class irc(BaseProtocol):
 					if not mode[2]:
 						logging.debug('Ignoring MODE with no argument')
 						continue
+					if not mode[2].lower() in changed_users:
+						changed_users.append(mode[2].lower())
 					for i, _ in enumerate(message.target.users):
 						if message.target.users[i][0].nick.lower() == mode[2].lower():
-							if not mode[2].lower() in changed_users:
-								changed_users.append(mode[2].lower())
 							mlist = message.target.users[i][1]
 							if mode[0] == "+":
 								mlist.append(mode[1])
