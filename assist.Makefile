@@ -1,3 +1,7 @@
+# This is for Travis CI until they get a LevelDB package that works.
+# Use your package manager to install LevelDB instead of using this
+# or I swear to Eywa I'll slap you repeatedly with a table tennis bat.
+
 .PHONY: deps
 
 deps:
