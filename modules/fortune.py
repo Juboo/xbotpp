@@ -1,6 +1,6 @@
 __xbotpp_module__ = "fortune"
 
-# Do it: yaourt -S fortune-mod
+# Requires BSD's fortune-mod
 
 import xbotpp
 import xbotpp.modules
@@ -8,10 +8,15 @@ import xbotpp.modules
 @xbotpp.modules.on_command('fortune')
 def fortune(info, args, buf):
   import subprocess
-  args_ = list(set([arg.lower()]))
-  if len(args_) > 1:                                                                 # If any arguments are present it
-    x = subprocess.Popen(["fortune", "-o"], stdout=subprocess.PIPE).communicate()[0] # prints an offensive fortune! >:D
-    return x
+  if len(args) > 0:
+    if args[0] == 'nsfw' or args[0] == 'n':
+      x = subprocess.check_output(["fortune", "-o"])  # An offensive fortune
+      return x
+    elif args[0] == 'any' or args[0] == 'a':
+      x = subprocess.check_output(["fortune", "-a"])  # Any fortune
+      return x
+    else:
+      return "{0}fortune [(h)elp | (a)ny | (n)sfw]"
   else:
-    x = subprocess.Popen("fortune", stdout=subprocess.PIPE).communicate()[0]
+    x = subprocess.check_output("fortune")
     return x
