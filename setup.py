@@ -9,7 +9,7 @@ setup(
     author='aki--aki',
     author_email='aki@aki.pw',
     url='https://github.com/aki--aki/xbotpp',
-    packages=['xbotpp', 'xbotpp.config', 'xbotpp.util'],
+    packages=['xbotpp', 'xbotpp.config', 'xbotpp.util', 'xbotpp.handler', 'xbotpp.protocol'],
     entry_points = {
         'console_scripts': [
             'xbotpp = xbotpp:main',
